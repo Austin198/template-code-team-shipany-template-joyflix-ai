@@ -737,6 +737,16 @@ Keep `.env.example` minimal; don't add provider keys to it.
 10. **Multi-statement writes use `atomic()`, never `db().transaction()`.** The latter is not atomic on D1. See "Atomic writes".
 11. **Upgrading a project from newer template code?** Follow `UPGRADING.md`. **Changing the template in a way existing projects must act on?** Add an entry there.
 
+## Cursor Cloud specific instructions
+
+Cloud Agent `install` prepares this repo; `start` launches the dev server. Node 22 and pnpm 10 are already on the image.
+
+- `pnpm install --frozen-lockfile` fails until `pnpm-lock.yaml` `patchedDependencies` for `nitro@3.0.260603-beta` is an object with `hash` and `path: patches/nitro@3.0.260603-beta.patch` (the committed file stores only the hash string). After that one-entry rewrite, frozen install matches the lockfile. Do not run a non-frozen install; it drifts the resolved versions.
+- Local env is gitignored `.env.development` (SQLite `DATABASE_URL=file:data/local.db`). Create it from `.env.example` when it is missing, with `AUTH_SECRET` from `openssl rand -base64 32`.
+- Sync tables with `pnpm exec tsx scripts/with-env.ts drizzle-kit push --config=drizzle.config.ts --force` (`pnpm db:push` prompts, and an extra `--` is forwarded into drizzle-kit).
+- Seed roles with `pnpm exec tsx scripts/init-rbac.ts`. A local super admin is `admin@joyflix.local`. Its password is in gitignored `.dev-admin` (`email` and `password`). Do not print that file or pass the password through `scripts/with-env.ts`, which logs the command.
+- Dev server: `pnpm exec vite dev --port 3000 --host 0.0.0.0`. `pnpm dev -- --host` forwards a literal `--` and Vite then ignores `--host` and listens on IPv6 localhost only. The app is http://localhost:3000 (sign-in `/sign-in`, admin `/admin`).
+
 ## Cloud Sandbox Notes (ShipAny Code / e2b)
 
 When this project runs inside a cloud sandbox (working dir like

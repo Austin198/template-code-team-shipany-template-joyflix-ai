@@ -9,7 +9,9 @@ overrides:
   seroval-plugins: 1.6.8
 
 patchedDependencies:
-  nitro@3.0.260603-beta: 5589529031427409dad878eb9cef755b82b1e49be0d269a498eeef5d141877c0
+  nitro@3.0.260603-beta:
+    hash: 5589529031427409dad878eb9cef755b82b1e49be0d269a498eeef5d141877c0
+    path: patches/nitro@3.0.260603-beta.patch
 
 importers:
 
