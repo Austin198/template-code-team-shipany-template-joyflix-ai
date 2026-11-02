@@ -1,0 +1,23 @@
+diff --git a/dist/runtime/internal/vite/dev-worker.mjs b/dist/runtime/internal/vite/dev-worker.mjs
+index 0cf82a1736eeade9b2fd0c94b6b5ce5976b5d819..60315b2885ba890caa30e412926d46cf9bc58fd3 100644
+--- a/dist/runtime/internal/vite/dev-worker.mjs
++++ b/dist/runtime/internal/vite/dev-worker.mjs
+@@ -67,14 +67,15 @@ class ViteEnvRunner {
+     if (this.entryError) {
+       return renderError(req, this.entryError);
+     }
+-    for (let i = 0; i < 5 && !(this.entry || this.entryError); i++) {
+-      await new Promise((r) => setTimeout(r, 100 * Math.pow(2, i)));
++    // 冷启动时 nitro 入口的首次 import 经常超过原来约 3.1s 的等待上限，首个请求会 503。
++    for (let i = 0; i < 600 && !(this.entry || this.entryError); i++) {
++      await new Promise((r) => setTimeout(r, 50));
+     }
+     if (this.entryError) {
+       return renderError(req, this.entryError);
+     }
+     if (!this.entry) {
+-      throw httpError(503, `Vite environment "${this.name}" is unavailable`);
++      return renderError(req, httpError(503, `Vite environment "${this.name}" is unavailable`));
+     }
+     try {
+       const entryFetch = this.entry.fetch || this.entry.default?.fetch;
