@@ -1,3 +1,5 @@
+import { PRODUCT_NAME } from './seo-site';
+
 export const AUTH_SECRET_PLACEHOLDER =
   'shipany-dev-secret-change-in-production';
 
@@ -16,7 +18,7 @@ const publicEnv = (key: string) => metaEnv[key] ?? procEnv[key];
 export const envConfigs: Record<string, string> = {
   // App (public)
   app_url: publicEnv('VITE_APP_URL') ?? 'http://localhost:3000',
-  app_name: publicEnv('VITE_APP_NAME') ?? 'Joyflix AI',
+  app_name: publicEnv('VITE_APP_NAME') ?? PRODUCT_NAME,
   app_description:
     publicEnv('VITE_APP_DESCRIPTION') ??
     'AI Video, Image & Music Generation Studio',
