@@ -12,9 +12,9 @@ import {
 
 import { useSession } from '@/core/auth/client';
 import { Link, usePathname } from '@/core/i18n/navigation';
+import { PRODUCT_NAME } from '@/config/seo-site';
 import { m } from '@/paraglide/messages.js';
 import { useAppName } from '@/hooks/use-public-config';
-import { LocaleSelector } from '@/components/locale-selector';
 import { SiteUserMenu } from '@/components/site-user-menu';
 import { Logo } from '@/components/sites/root/Logo';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -55,7 +55,7 @@ export function Header() {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  const appName = useAppName() || 'Joyflix AI';
+  const appName = useAppName() || PRODUCT_NAME;
 
   return (
     <header
@@ -145,7 +145,6 @@ export function Header() {
         {/* Right Section */}
         <div className="flex items-center gap-1.5 sm:gap-3">
           <div className="hidden items-center gap-1.5 sm:gap-3 lg:flex">
-            <LocaleSelector />
             <ThemeToggle />
             {!mounted ? (
               <div className="h-8 w-20" />
@@ -249,7 +248,6 @@ export function Header() {
           <div className="border-border/60 bg-background/95 shrink-0 border-t px-6 py-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:bg-[#0d0f14]/95">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <LocaleSelector />
                 <ThemeToggle />
               </div>
               {!mounted ? (

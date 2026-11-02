@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { envConfigs } from '@/config';
+import { absoluteUrl } from '@/config/seo-site';
 
 export const Route = createFileRoute('/robots.txt')({
   server: {
@@ -13,35 +13,11 @@ export const Route = createFileRoute('/robots.txt')({
           'Disallow: /settings',
           'Disallow: /api/',
           '',
-          'User-Agent: Googlebot',
-          'Allow: /',
-          'Disallow: /admin',
-          'Disallow: /settings',
-          'Disallow: /api/',
-          '',
-          'User-Agent: Bingbot',
-          'Allow: /',
-          'Disallow: /admin',
-          'Disallow: /settings',
-          'Disallow: /api/',
-          '',
-          'User-Agent: GPTBot',
-          'Allow: /',
-          '',
-          'User-Agent: ChatGPT-User',
-          'Allow: /',
-          '',
-          'User-Agent: PerplexityBot',
-          'Allow: /',
-          '',
-          'User-Agent: ClaudeBot',
-          'Allow: /',
-          '',
-          `Sitemap: ${envConfigs.app_url}/sitemap.xml`,
+          `Sitemap: ${absoluteUrl('/sitemap.xml')}`,
           '',
         ].join('\n');
         return new Response(body, {
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
         });
       },
     },

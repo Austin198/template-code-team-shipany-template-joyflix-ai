@@ -3,7 +3,6 @@ import {
   CheckIcon,
   Coins,
   EllipsisVerticalIcon,
-  LanguagesIcon,
   LogOutIcon,
   MonitorIcon,
   MoonIcon,
@@ -16,19 +15,13 @@ import { useTheme } from 'next-themes';
 
 import { signOut } from '@/core/auth/client';
 import { tDynamic } from '@/core/i18n/dynamic';
-import { Link, useRouter } from '@/core/i18n/navigation';
+import { Link } from '@/core/i18n/navigation';
 import { THEMES } from '@/config/appearance';
-import { localeNames } from '@/config/locale';
 import { clearLocalCreations } from '@/modules/creations/store';
 import { apiGet } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages.js';
-import {
-  getLocale,
-  locales,
-  localizeHref,
-  setLocale,
-} from '@/paraglide/runtime.js';
+import { localizeHref } from '@/paraglide/runtime.js';
 import { useAppearance } from '@/hooks/use-appearance';
 import { ThemeDot } from '@/components/appearance-options';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -72,8 +65,6 @@ export function UserMenu({
   sideOffset?: number;
   className?: string;
 }) {
-  const router = useRouter();
-  const locale = getLocale();
   const { theme, setTheme } = useTheme();
   const {
     siteAppearance,
@@ -97,11 +88,6 @@ export function UserMenu({
     clearLocalCreations();
     await signOut();
     window.location.href = '/';
-  }
-
-  function handleLocaleSwitch(newLocale: string) {
-    // Writes the locale cookie and reloads on the localized URL.
-    setLocale(newLocale as typeof locale);
   }
 
   const dropdownTrigger = (
@@ -181,23 +167,6 @@ export function UserMenu({
             {m['common.nav.profile']()}
           </DropdownMenuItem>
         )}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="gap-2 px-2 py-2">
-            <LanguagesIcon className="size-4" />
-            <span className="flex-1">{localeNames[locale] || locale}</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            {locales.map((loc) => (
-              <DropdownMenuItem
-                key={loc}
-                onClick={() => handleLocaleSwitch(loc)}
-              >
-                <span className="flex-1">{localeNames[loc] || loc}</span>
-                {loc === locale && <CheckIcon className="size-3.5" />}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
         {!colorModeForced && (
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="gap-2 px-2 py-2">

@@ -32,7 +32,6 @@ import {
 import { parseCookieConsent } from '@/lib/cookie-consent';
 import { getQueryClient } from '@/lib/query-client';
 import { m } from '@/paraglide/messages.js';
-import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
 import { useAppearance } from '@/hooks/use-appearance';
 import { useCookieConsent } from '@/hooks/use-cookie-consent';
 import { CookieConsent } from '@/blocks/cookie-consent';
@@ -234,19 +233,6 @@ export const Route = createRootRoute({
           logo: `${appUrl}/logo.png`,
           sameAs: [],
         },
-        {
-          '@type': 'SoftwareApplication',
-          name: appName,
-          applicationCategory: 'MultimediaApplication',
-          operatingSystem: 'All',
-          description: appDescription,
-          url: `${appUrl}/workspace`,
-          offers: {
-            '@type': 'Offer',
-            price: '0',
-            priceCurrency: 'USD',
-          },
-        },
       ],
     };
 
@@ -260,10 +246,6 @@ export const Route = createRootRoute({
         },
         { title: appName },
         { name: 'description', content: appDescription },
-        {
-          name: 'keywords',
-          content: `AI video generator, text to video, image to video, AI studio, ${appName}`,
-        },
         {
           name: 'robots',
           content:
@@ -296,13 +278,6 @@ export const Route = createRootRoute({
         { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' },
         { rel: 'shortcut icon', href: '/favicon.ico', type: 'image/x-icon' },
         { rel: 'apple-touch-icon', href: '/logo.png' },
-        { rel: 'canonical', href: canonicalUrl },
-        { rel: 'alternate', hrefLang: 'x-default', href: canonicalUrl },
-        ...locales.map((loc) => ({
-          rel: 'alternate',
-          hrefLang: loc,
-          href: localizeUrl(`${appUrl}/`, { locale: loc }).href,
-        })),
       ],
       scripts: [
         {
@@ -381,7 +356,7 @@ function RootDocument({ children }: { children: ReactNode }) {
   const { appearance, appearanceEnabled } = useAppearance();
   return (
     <html
-      lang={getLocale()}
+      lang="en"
       data-theme={appearanceEnabled ? appearance.theme : undefined}
       style={appearanceEnabled ? appearanceStyle(appearance) : undefined}
       suppressHydrationWarning

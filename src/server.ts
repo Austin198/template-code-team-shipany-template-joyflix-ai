@@ -1,6 +1,7 @@
 import handler from '@tanstack/react-start/server-entry';
 
 import { envConfigs } from './config';
+import { seoPathRedirect } from './config/seo-landings';
 import { runWithDbScope } from './core/db/request-scope';
 import {
   getCookieFromHeader,
@@ -108,7 +109,25 @@ export default {
   },
 };
 
+function seoCanonicalRedirect(req: Request): Response | null {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return null;
+  const url = new URL(req.url);
+  const path = seoPathRedirect(url);
+  if (!path) return null;
+  const destination = new URL(path, url.origin);
+  return new Response(null, {
+    status: 301,
+    headers: { Location: destination.toString() },
+  });
+}
+
 async function handleRequest(req: Request): Promise<Response> {
+  const canonical = seoCanonicalRedirect(req);
+  if (canonical) {
+    const response = withPoweredBy(canonical);
+    applySecurityHeaders(response);
+    return response;
+  }
   const response = withPoweredBy(
     await paraglideMiddleware(req, () => handler.fetch(req))
   );
