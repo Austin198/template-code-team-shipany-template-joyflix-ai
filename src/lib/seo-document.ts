@@ -1,10 +1,17 @@
-import { homeFaq, paragraphText, type SeoPage } from '@/config/seo-landings';
+import {
+  homeFaq,
+  paragraphText,
+  pricingPageModel,
+  type SeoPage,
+} from '@/config/seo-landings';
 import {
   absoluteUrl,
   HOME_DESCRIPTION,
   HOME_TITLE,
   PRICE_PRO,
   PRICE_STARTER,
+  PRICING_DESCRIPTION,
+  PRICING_TITLE,
   PRO_QUOTA,
   PRODUCT_NAME,
   SITE_URL,
@@ -90,6 +97,31 @@ export function homeSeoHead() {
             })),
           },
         ],
+      }),
+    ],
+  };
+}
+
+export function pricingSeoHead() {
+  const url = absoluteUrl('/pricing');
+  const image = absoluteUrl('/seo/demo-poster.webp');
+  const page = pricingPageModel();
+  return {
+    meta: socialMeta(PRICING_TITLE, PRICING_DESCRIPTION, url, image),
+    links: [{ rel: 'canonical', href: url }],
+    scripts: [
+      jsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        url,
+        mainEntity: page.faq.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.answer,
+          },
+        })),
       }),
     ],
   };

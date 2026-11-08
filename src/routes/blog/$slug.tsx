@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 
 import { Link, useRouter } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
+import { SITE_URL } from '@/config/seo-site';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages.js';
 import { getLocale, localizeUrl } from '@/paraglide/runtime.js';
@@ -60,7 +61,7 @@ export const Route = createFileRoute('/blog/$slug')({
         ],
       };
     }
-    const canonical = localizeUrl(`${envConfigs.app_url}/blog/${post.slug}`, {
+    const canonical = localizeUrl(`${SITE_URL}/blog/${post.slug}`, {
       locale: locale as any,
     }).href;
     return {

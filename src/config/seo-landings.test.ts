@@ -10,12 +10,16 @@ import {
   homeBodyText,
   homeFaq,
   paragraphText,
+  pricingPageModel,
   SEO_SLUG_PAGES,
   seoPathRedirect,
   seoSitemapPaths,
   STYLE_PAGES,
 } from '@/config/seo-landings';
 import {
+  absoluteUrl,
+  apexRedirectUrl,
+  canonicalSiteUrl,
   FREE_QUOTA,
   HOME_DESCRIPTION,
   HOME_TITLE,
@@ -23,7 +27,9 @@ import {
   PRICE_STARTER,
   PRO_QUOTA,
   PRODUCT_NAME,
+  requestApexRedirect,
   SEO_SLUG_LIST,
+  SITE_URL,
   STARTER_QUOTA,
   STYLE_SLUG_LIST,
 } from '@/config/seo-site';
@@ -88,7 +94,11 @@ describe('seo landings', () => {
       'AI Motion Graphics Generator – Type a Prompt, Get a Video'
     );
     expect(HOME_DESCRIPTION).toBe(
-      'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4 — free to try, no timeline skills needed.'
+      'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4. There is no free generation quota, and no timeline skills are needed.'
+    );
+    expect(HOME_DESCRIPTION.toLowerCase()).not.toContain('free to try');
+    expect(HOME_DESCRIPTION.toLowerCase()).toContain(
+      'no free generation quota'
     );
     expect(HOME_TITLE.toLowerCase()).not.toContain('magnific');
     expect(HOME_DESCRIPTION.toLowerCase()).not.toContain('magnific');
@@ -149,34 +159,100 @@ describe('seo landings', () => {
   });
 
   it('redirects trailing slashes, queries, and /zh copies of indexable urls', () => {
-    expect(seoPathRedirect(new URL('https://aniform.ai/'))).toBeNull();
+    expect(seoPathRedirect(new URL(`${SITE_URL}/`))).toBeNull();
     expect(
-      seoPathRedirect(
-        new URL('https://aniform.ai/free-motion-graphics-generator')
-      )
+      seoPathRedirect(new URL(`${SITE_URL}/free-motion-graphics-generator`))
     ).toBeNull();
     expect(
-      seoPathRedirect(
-        new URL('https://aniform.ai/free-motion-graphics-generator/')
-      )
+      seoPathRedirect(new URL(`${SITE_URL}/free-motion-graphics-generator/`))
     ).toBe('/free-motion-graphics-generator');
     expect(
       seoPathRedirect(
-        new URL('https://aniform.ai/motion-graphics/logo-animation?utm=1')
+        new URL(`${SITE_URL}/motion-graphics/logo-animation?utm=1`)
       )
     ).toBe('/motion-graphics/logo-animation');
-    expect(seoPathRedirect(new URL('https://aniform.ai/zh'))).toBe('/');
+    expect(seoPathRedirect(new URL(`${SITE_URL}/zh`))).toBe('/');
     expect(
-      seoPathRedirect(new URL('https://aniform.ai/zh/motion-graphics-editor/'))
+      seoPathRedirect(new URL(`${SITE_URL}/zh/motion-graphics-editor/`))
     ).toBe('/motion-graphics-editor');
+    expect(seoPathRedirect(new URL(`${SITE_URL}/pricing?plan=pro`))).toBeNull();
+    expect(seoPathRedirect(new URL(`${SITE_URL}/motion-graphics`))).toBeNull();
+    expect(seoPathRedirect(new URL(`${SITE_URL}/not-a-page`))).toBeNull();
+  });
+
+  it('publishes every sitemap loc on the apex', () => {
+    expect(SITE_URL).toBe('https://aniform.online');
+    const locs = seoSitemapPaths().map((path) => absoluteUrl(path));
+    expect(locs).toHaveLength(13);
+    expect(locs[0]).toBe('https://aniform.online');
+    expect(absoluteUrl('/sitemap.xml')).toBe(
+      'https://aniform.online/sitemap.xml'
+    );
+    expect(locs.every((loc) => loc.startsWith('https://aniform.online'))).toBe(
+      true
+    );
+    expect(locs.some((loc) => loc.includes('aniform.ai'))).toBe(false);
+  });
+
+  it('redirects www and retired hosts to the apex with the same path and query', () => {
     expect(
-      seoPathRedirect(new URL('https://aniform.ai/pricing?plan=pro'))
-    ).toBeNull();
+      apexRedirectUrl(new URL('https://www.aniform.online/pricing?plan=pro'))
+    ).toBe('https://aniform.online/pricing?plan=pro');
+    expect(apexRedirectUrl(new URL('https://www.aniform.online/'))).toBe(
+      'https://aniform.online/'
+    );
+    expect(apexRedirectUrl(new URL('https://aniform.ai/sitemap.xml?x=1'))).toBe(
+      'https://aniform.online/sitemap.xml?x=1'
+    );
+    expect(apexRedirectUrl(new URL('https://www.aniform.ai/robots.txt'))).toBe(
+      'https://aniform.online/robots.txt'
+    );
+    expect(apexRedirectUrl(new URL(`${SITE_URL}/pricing?plan=pro`))).toBeNull();
     expect(
-      seoPathRedirect(new URL('https://aniform.ai/motion-graphics'))
+      apexRedirectUrl(new URL('http://localhost:3000/pricing'))
     ).toBeNull();
+    expect(canonicalSiteUrl('https://aniform.ai')).toBe(SITE_URL);
+    expect(canonicalSiteUrl('https://www.aniform.online/app')).toBe(SITE_URL);
+    expect(canonicalSiteUrl('http://localhost:3000')).toBe(
+      'http://localhost:3000'
+    );
+    expect(canonicalSiteUrl(undefined)).toBeUndefined();
+
+    const proxied = new Request('http://internal/pricing?plan=pro', {
+      headers: { host: 'www.aniform.online' },
+    });
+    expect(requestApexRedirect(proxied)).toBe(
+      'https://aniform.online/pricing?plan=pro'
+    );
     expect(
-      seoPathRedirect(new URL('https://aniform.ai/not-a-page'))
+      requestApexRedirect(new Request('https://aniform.online/pricing'))
     ).toBeNull();
+  });
+
+  it('keeps pricing on the two monthly plans and off credit packs', () => {
+    const page = pricingPageModel();
+    const text = [
+      page.h1,
+      page.intro,
+      page.description,
+      ...page.plans.flatMap((plan) => [plan.h3, plan.paragraph]),
+      ...page.faq.flatMap((item) => [item.question, item.answer]),
+    ]
+      .join('\n')
+      .toLowerCase();
+    expect(page.h1).toBe('Aniform pricing');
+    expect(text).toContain('$19/mo');
+    expect(text).toContain('$49/mo');
+    expect(text).toContain('60 generations');
+    expect(text).toContain('200 generations');
+    expect(text).toContain('does not offer a free generation quota');
+    expect(text).toContain('monthly');
+    expect(text).toContain('does not sell one-time credit packs');
+    expect(text).not.toContain('joyflix');
+    expect(text).not.toContain('joyfly');
+    expect(text).not.toContain('9.99');
+    expect(text).not.toContain('49.99');
+    expect(text).not.toContain('99.99');
+    expect(text).not.toContain('free to try');
   });
 });

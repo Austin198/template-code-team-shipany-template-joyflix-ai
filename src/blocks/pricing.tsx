@@ -1,5 +1,9 @@
 'use client';
 
+/**
+ * Legacy one-time credit-pack checkout. Not mounted.
+ * /pricing renders `@/components/seo/pricing-landing` (Starter $19/mo, Pro $49/mo).
+ */
 import { useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import {

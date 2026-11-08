@@ -1,7 +1,21 @@
-/** Single source for Aniform SEO constants. Do not hardcode the product name or domain elsewhere. */
+/**
+ * Single source for Aniform SEO constants. Do not hardcode the product name
+ * or domain elsewhere.
+ *
+ * Public canonical origin is the apex https://aniform.online. Sitemap locs,
+ * robots Sitemap, canonical, Open Graph, and JSON-LD all go through
+ * `absoluteUrl()` / `SITE_URL`. `www.aniform.online` (and the retired
+ * aniform.ai host, if a request still reaches this app) 301/308 to that apex
+ * via `requestApexRedirect()` in `src/server.ts`.
+ *
+ * The www hostname has to stay attached to the same Cloudflare Worker as the
+ * apex. The Worker sees the original Host and answers before the page
+ * renders. If www is removed from the Worker, Cloudflare never calls this
+ * code and the redirect cannot run.
+ */
 
 export const PRODUCT_NAME = 'Aniform';
-export const SITE_URL = 'https://aniform.ai';
+export const SITE_URL = 'https://aniform.online';
 export const FREE_QUOTA = 0;
 export const PRICE_STARTER = '$19/mo';
 export const PRICE_PRO = '$49/mo';
@@ -11,7 +25,19 @@ export const PRO_QUOTA = 200;
 export const HOME_TITLE =
   'AI Motion Graphics Generator – Type a Prompt, Get a Video';
 export const HOME_DESCRIPTION =
-  'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4 — free to try, no timeline skills needed.';
+  'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4. There is no free generation quota, and no timeline skills are needed.';
+
+export const PRICING_TITLE = `${PRODUCT_NAME} pricing`;
+export const PRICING_DESCRIPTION = `Monthly plans only. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations. No free generation quota.`;
+
+const APEX_HOST = new URL(SITE_URL).hostname;
+
+/** Hosts that must not be indexed or shared. They redirect to SITE_URL. */
+const LEGACY_HOSTS = new Set([
+  `www.${APEX_HOST}`,
+  'aniform.ai',
+  'www.aniform.ai',
+]);
 
 const STYLE_SLUGS = [
   'social-media-ads',
@@ -63,4 +89,50 @@ export function isStyleSlug(value: string): value is StyleSlug {
 
 export function isSeoSlug(value: string): value is SeoSlug {
   return (SEO_SLUGS as readonly string[]).includes(value);
+}
+
+/**
+ * When an env/app URL still names a retired host, use the apex instead.
+ * Unset and localhost values are left alone so local auth keeps working.
+ */
+export function canonicalSiteUrl(
+  value: string | undefined
+): string | undefined {
+  if (!value) return value;
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    if (LEGACY_HOSTS.has(host)) return SITE_URL;
+  } catch {
+    return value;
+  }
+  return value;
+}
+
+/**
+ * Absolute apex URL for this request, or null when the host is already the
+ * public origin (or any non-production host such as localhost).
+ * Path and query are preserved. The hash is not part of the HTTP request.
+ */
+export function apexRedirectUrl(url: URL): string | null {
+  const host = url.hostname.toLowerCase();
+  if (!LEGACY_HOSTS.has(host)) return null;
+  const dest = new URL(SITE_URL);
+  dest.pathname = url.pathname || '/';
+  dest.search = url.search;
+  return dest.toString();
+}
+
+/**
+ * Same as `apexRedirectUrl`, but the Host header wins when the request URL
+ * carries an internal proxy host. Destination host is always SITE_URL.
+ */
+export function requestApexRedirect(req: Request): string | null {
+  const url = new URL(req.url);
+  const headerHost = (req.headers.get('host') || '')
+    .split(',')[0]
+    ?.trim()
+    .replace(/:\d+$/, '')
+    .toLowerCase();
+  if (headerHost) url.hostname = headerHost;
+  return apexRedirectUrl(url);
 }
