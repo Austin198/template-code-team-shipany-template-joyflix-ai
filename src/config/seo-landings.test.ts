@@ -48,6 +48,7 @@ import {
 import {
   aiVideoGeneratorSeoHead,
   homeSeoHead,
+  pricingSeoHead,
   subpageSeoHead,
 } from '@/lib/seo-document';
 
@@ -93,15 +94,14 @@ describe('seo landings', () => {
     expect(PRODUCT_NAME).toBe('Aniform');
     expect(PRICE_STARTER).toBe('$19/mo');
     expect(PRICE_PRO).toBe('$49/mo');
-    expect(STARTER_QUOTA).toBe(60);
-    expect(PRO_QUOTA).toBe(200);
-    const aniform = COMPARISON_ROWS[0];
-    expect(aniform?.tool).toBe(PRODUCT_NAME);
-    expect(aniform?.cells[3]).toBe('No');
-    for (const row of COMPARISON_ROWS.slice(1)) {
-      expect(row.cells.every((cell) => cell === '—')).toBe(true);
-    }
+    expect(STARTER_QUOTA).toBe(40);
+    expect(PRO_QUOTA).toBe(100);
+    expect(COMPARISON_ROWS).toEqual([
+      { tool: PRODUCT_NAME, cells: ['Yes', 'Yes', 'Yes', 'No'] },
+    ]);
+    expect(COMPARISON_ROWS.some((row) => row.cells.includes('—'))).toBe(false);
     expect(COMPARISON_FOOTNOTE).toContain('November 2026');
+    expect(COMPARISON_FOOTNOTE).not.toMatch(/Magnific|Jitter|Opus|easymotion/);
   });
 
   it('keeps the six FAQ questions and does not advertise a free quota', () => {
@@ -453,9 +453,9 @@ describe('seo landings', () => {
     const line = paragraphText(STYLE_PLAN_LINE);
     expect(line.match(/no free generation quota/gi)).toHaveLength(1);
     expect(line).toContain('$19/mo');
-    expect(line).toContain('60 generations');
+    expect(line).toContain('40 generations');
     expect(line).toContain('$49/mo');
-    expect(line).toContain('200 generations');
+    expect(line).toContain('100 generations');
     expect(line).toContain('pricing');
     expect(STYLE_PAGES.map((page) => page.navLabel)).toEqual([
       'Social ads',
@@ -481,8 +481,11 @@ describe('seo landings', () => {
     expect(page.h1).toBe('Aniform pricing');
     expect(text).toContain('$19/mo');
     expect(text).toContain('$49/mo');
-    expect(text).toContain('60 generations');
-    expect(text).toContain('200 generations');
+    expect(text).toContain('40 generations');
+    expect(text).toContain('100 generations');
+    expect(text).toContain('5-second 720p');
+    expect(text).toContain('counts as 4');
+    expect(text).not.toMatch(/4k|transparent/);
     expect(text).toContain('does not offer a free generation quota');
     expect(text).toContain('monthly');
     expect(text).toContain('does not sell one-time credit packs');
@@ -492,5 +495,27 @@ describe('seo landings', () => {
     expect(text).not.toContain('49.99');
     expect(text).not.toContain('99.99');
     expect(text).not.toContain('free to try');
+  });
+
+  it('keeps homepage, style pages, and JSON-LD on the new plans', () => {
+    const styleText = STYLE_PAGES.map((page) =>
+      [page.summary ?? '', collectPageText(page)].join('\n')
+    ).join('\n');
+    const homeOffers = homeSeoHead().scripts?.[0]?.children ?? '';
+    const pricingFaq = pricingSeoHead().scripts?.[0]?.children ?? '';
+    const publicText = [homeBodyText(), styleText, homeOffers, pricingFaq]
+      .join('\n')
+      .toLowerCase();
+    expect(publicText).toContain('40 generations');
+    expect(publicText).toContain('100 generations');
+    expect(publicText).not.toContain('60 generations');
+    expect(publicText).not.toContain('200 generations');
+    expect(publicText).not.toMatch(
+      /4k|transparent export|transparent background/
+    );
+    expect(homeBodyText()).not.toMatch(/Jitter|Opus Clip|easymotion/);
+    expect(homeOffers).toContain('"@type":"Offer"');
+    expect(homeOffers).toContain('"@type":"FAQPage"');
+    expect(pricingFaq).toContain('"@type":"FAQPage"');
   });
 });

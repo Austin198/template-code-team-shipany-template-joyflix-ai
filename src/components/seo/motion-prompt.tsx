@@ -3,7 +3,9 @@ import { useNavigate } from '@tanstack/react-router';
 import { Wand2 } from 'lucide-react';
 
 import { useSession } from '@/core/auth/client';
+import { GENERATION_UNIT_COPY } from '@/config/seo-site';
 import { QuickAuthModal } from '@/components/sites/creation/QuickAuthModal';
+import { DEFAULT_VIDEO_MODEL_ID } from '@/components/sites/shared/models';
 import { Button } from '@/components/ui/button';
 
 const DRAFT_KEY = 'joyflix_pending_generation_draft';
@@ -24,7 +26,7 @@ export function MotionPrompt() {
       action_intent: 'generate',
       generationRequested,
       prompt: prompt.trim(),
-      modelId: 'seedance-2-5',
+      modelId: DEFAULT_VIDEO_MODEL_ID,
       duration: '5s',
       resolution: '720P',
       aspectRatio: '16:9',
@@ -79,6 +81,9 @@ export function MotionPrompt() {
         <Wand2 className="size-4" />
         Generate motion graphics
       </Button>
+      <p className="text-muted-foreground mt-3 text-sm leading-6">
+        {GENERATION_UNIT_COPY}
+      </p>
       <QuickAuthModal
         open={showAuth}
         onOpenChange={setShowAuth}

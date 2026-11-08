@@ -1,11 +1,13 @@
 import {
   FREE_QUOTA,
+  GENERATION_UNIT_COPY,
   HOME_KEYWORD,
   isSeoSlug,
   isStyleSlug,
   PRICE_PRO,
   PRICE_STARTER,
   PRICING_DESCRIPTION,
+  PRICING_GRANDFATHER_NOTE,
   PRICING_TITLE,
   PRO_QUOTA,
   PRODUCT_NAME,
@@ -86,7 +88,7 @@ export const COMPARISON_COLUMNS = [
 ] as const;
 
 export const COMPARISON_FOOTNOTE =
-  'Feature comparison is based on publicly documented behaviour as of November 2026 and may change.';
+  'Aniform answers above are for this product as of November 2026 and may change.';
 
 export type ComparisonRow = {
   tool: string;
@@ -95,10 +97,6 @@ export type ComparisonRow = {
 
 export const COMPARISON_ROWS: readonly ComparisonRow[] = [
   { tool: PRODUCT_NAME, cells: ['Yes', 'Yes', 'Yes', 'No'] },
-  { tool: 'Magnific Move', cells: ['—', '—', '—', '—'] },
-  { tool: 'Jitter', cells: ['—', '—', '—', '—'] },
-  { tool: 'Opus Clip', cells: ['—', '—', '—', '—'] },
-  { tool: 'easymotion', cells: ['—', '—', '—', '—'] },
 ];
 
 const thumb = (slug: string, detail: string) =>
@@ -236,7 +234,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
         h2: 'A reveal for the mark you already have',
         paragraphs: [
           'Logo animation is a reveal, a settle, and a hold. Describe the mark in words the way a viewer would recognize it: the wordmark spelling, the rough shape of the symbol, and the background it has to sit on. Say whether the motion should feel quick or ceremonial. Ask for the name to be readable at the end, not only suggested by motion.',
-          'If you have a required color, name it in plain language. If the background must be clear so an editor can place the move over footage, say that you need a transparent export and plan on Pro, which is the plan that includes it. The prompt is still about the reveal. It is not a request to invent a new logo.',
+          'If you have a required color, name it in plain language. If the mark has to sit on a dark header and a light one, name both backgrounds in the prompt and check the hold on each. The prompt is still about the reveal. It is not a request to invent a new logo.',
         ],
         figure: thumb('logo-animation', 'logo animation wordmark reveal'),
       },
@@ -252,7 +250,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
         paragraphs: [
           'Export MP4 for a site, a deck, or the end of a spot. Watch the hold as if you had never seen the mark. The wordmark should be obvious after the motion stops, spelled the way you use it in public. If the entrance is clever and the still name is not, the reveal is not finished. Simplify until the settled frame is the thing you remember, then hand off that name rather than a project someone else has to rebuild.',
           'Deliver the file, not a project. A webmaster and a video editor can both use an MP4. When the wordmark gains a new letter after a rename, edit that element and export again so the reveal you liked does not get redesigned by accident.',
-          'Check the hold on a dark background and a light one if the logo will sit in both places. A move that disappears into a white header is not finished. Recolor the element or export the transparent Pro file and let the page supply the background, instead of generating a second logo you did not ask for.',
+          'Check the hold on a dark background and a light one if the logo will sit in both places. A move that disappears into a white header is not finished. Recolor the element so the mark stays visible on that header, instead of generating a second logo you did not ask for.',
         ],
       },
     ],
@@ -405,14 +403,14 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
       {
         h2: 'What the MP4 includes',
         paragraphs: [
-          'Starter exports 1080p with no watermark and a commercial license. You can post it, run it as an ad, or give it to a client under that license. Pro adds 4K and a transparent background export, plus a priority queue when time is short. Transparent export is for placing the motion over other footage. If you do not need that, Starter’s MP4 is a complete delivery.',
+          'Starter’s standard export is 720P with no watermark and a commercial license. You can post it, run it as an ad, or give it to a client under that license. A 5-second 720P video is one generation. 1080P counts as two, and 10 seconds counts as two. Pro adds a priority queue when time is short. Starter’s MP4 is a complete delivery at 720P.',
           'The file does not require the person downstream to own the tool. An editor, a webmaster, and an ad account can all take MP4. If they ask for a project file, you can still hand them the video and, when a line must change, perform that change yourself in the element editor and send a new MP4.',
         ],
       },
       {
         h2: 'Before you press generate',
         paragraphs: [
-          'Read the sentence aloud. If you stumble, the viewer will too. Check numerals, names, and the one claim you are willing to put on screen. Decide the plan before you need the file the same afternoon: Starter for a regular cadence at 1080p, Pro for more renders, 4K, or a cutout background. The prompt box on the homepage accepts the sentence before sign-in so you can do this reading first.',
+          'Read the sentence aloud. If you stumble, the viewer will too. Check numerals, names, and the one claim you are willing to put on screen. Decide the plan before you need the file the same afternoon: Starter for a regular cadence at 720P, Pro for more renders and a priority queue. The prompt box on the homepage accepts the sentence before sign-in so you can do this reading first.',
           'Then generate, edit the elements that are wrong, and export. If you are choosing a style — a feed ad, an intro, an explainer, a logo move, type-led motion, or a single statistic — start from that style page so the brief matches the job. The generator is the same path in each case. The sentence is what changes.',
           'Keep the prompt next to the file name you export. When someone asks for a small change weeks later, you will want the original sentence and the element you already edited, not a memory of the mood. A generator that ends in MP4 is a delivery tool. Treat the download as the record, and treat a new generation as a new record, so a month of Starter stays a month of scenes rather than a month of discarded drafts. Play the file once on a phone before you send it. If the words survive that size, the export is finished. If they do not, edit the element and export again instead of starting a new scene.',
         ],
@@ -444,7 +442,7 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
         h2: 'What a click is allowed to change',
         paragraphs: [
           'Retype any on-screen text: a price, a name, a button label, a statistic. Change the color of an element when the brand color was missed or two objects need to separate. Change timing when a beat is early or late. Do not expect a click to invent a new scene, a new character, or a different aspect ratio. Those are new generations, and they draw from the monthly quota.',
-          `Starter (${PRICE_STARTER}, ${STARTER_QUOTA} generations, 1080p, no watermark, commercial license) and Pro (${PRICE_PRO}, ${PRO_QUOTA} generations, 4K, transparent background, priority queue) both include this editing. There is no free plan that locks editing behind a watermark. If you have not bought a plan, you can still write the prompt. You cannot spend a generation you have not paid for.`,
+          `Starter (${PRICE_STARTER}, ${STARTER_QUOTA} generations, 720P standard, no watermark, commercial license) and Pro (${PRICE_PRO}, ${PRO_QUOTA} generations, 1080P, priority queue) both include this editing. There is no free plan that locks editing behind a watermark. If you have not bought a plan, you can still write the prompt. You cannot spend a generation you have not paid for.`,
         ],
       },
       {
@@ -477,7 +475,7 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
       {
         h2: 'Why this is not a borrowed manual',
         paragraphs: [
-          'A step-by-step for someone else’s product goes stale the week their interface moves, and it becomes false the moment it invents a button. This page does not publish click-paths, menu names, or feature claims for Magnific Move. The homepage comparison marks that tool with a dash for prompt-to-video, editing text in a finished video, MP4 export, and a free plan. A dash means “not stated here.” It does not mean yes, and it does not mean no.',
+          'A step-by-step for someone else’s product goes stale the week their interface moves, and it becomes false the moment it invents a button. This page does not publish click-paths, menu names, or feature claims for Magnific Move. The homepage table scores Aniform only, on prompt-to-video, editing text in a finished video, MP4 export, and a free plan. It does not include a Magnific Move row. Leaving them off the table is not a yes, and it is not a no.',
           `The comparison is dated November 2026 and can change. If you need their current behavior, use their own documentation. What follows is the workflow people are usually trying to complete when they search for a how-to: describe a scene, change the words after they see them, and leave with an MP4. That workflow is documented here for ${PRODUCT_NAME} only.`,
         ],
         figure: figure(
@@ -489,13 +487,13 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
         h2: 'The three steps we can actually teach',
         paragraphs: [
           `Step one is the sentence. On the ${PRODUCT_NAME} homepage, type what is on screen, the exact text a viewer must read, and the frame. You can do this before you sign in. The field does not spend a generation and it does not start a free render. ${FREE_QUOTA === 0 ? 'There is no free generation quota.' : `Free quota is ${FREE_QUOTA}.`} Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations. Pro is ${PRICE_PRO} for ${PRO_QUOTA}.`,
-          'Step two is the click. After a paid generation, select the element that is wrong. Retype the text, change the color, or move the timing. Do not open a timeline and do not hunt for a layer name. If the whole idea is wrong, generate again instead of forcing the editor to become a different scene. Step three is export. Starter delivers 1080p MP4 with no watermark and a commercial license. Pro adds 4K, transparent background export, and a priority queue.',
+          'Step two is the click. After a paid generation, select the element that is wrong. Retype the text, change the color, or move the timing. Do not open a timeline and do not hunt for a layer name. If the whole idea is wrong, generate again instead of forcing the editor to become a different scene. Step three is export. Starter delivers 720P MP4 with no watermark and a commercial license. Pro adds 1080P and a priority queue. 1080P counts as two generations.',
         ],
       },
       {
         h2: 'How to judge a tool without a rumor',
         paragraphs: [
-          'Use four questions, the same four columns as the table. Can you go from a prompt to a video? Can you edit text in the finished video? Can you export MP4? Is there a free plan? For any tool we have not documented, leave the answer blank until you have seen it yourself. Filling a blank with a guess helps a landing page and hurts a buyer. This page leaves Magnific Move blank on purpose.',
+          'Use four questions, the same four columns as the Aniform table. Can you go from a prompt to a video? Can you edit text in the finished video? Can you export MP4? Is there a free plan? For any tool we have not documented, do not invent an answer. A guess helps a landing page and hurts a buyer. This page does not score Magnific Move.',
           `Apply the same four questions to ${PRODUCT_NAME} and you get yes, yes, yes, and no. The no is the free plan. We would rather print the no than imply a trial we do not sell. If a guide elsewhere promises free Magnific Move output, that claim is not one we are repeating, confirming, or denying.`,
         ],
       },
@@ -515,14 +513,14 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
     path: '/magnific-move-alternative',
     title: 'Magnific Move Alternative – Editable Text After Generation',
     description:
-      'Aniform as a Magnific Move alternative: prompt, editable text after generation, MP4 export, and no free plan. Competitor cells stay blank.',
+      'Aniform as a Magnific Move alternative: prompt, editable text after generation, MP4 export, and no free plan. Other products are not scored.',
     h1: 'Magnific Move Alternative',
     keyword: 'Magnific Move Alternative',
     sections: [
       {
         h2: 'An alternative stated only in our own columns',
         paragraphs: [
-          `Calling ${PRODUCT_NAME} a Magnific Move alternative means you can do a specific job here: describe motion graphics, change the text after the video exists, and export MP4. It does not mean we have measured their product and found it lacking. The comparison table prints a dash in every Magnific Move cell. Those dashes are the whole of our public statement about them as of November 2026.`,
+          `Calling ${PRODUCT_NAME} a Magnific Move alternative means you can do a specific job here: describe motion graphics, change the text after the video exists, and export MP4. It does not mean we have measured their product and found it lacking. The homepage table scores Aniform and does not include a Magnific Move row. That omission is the whole of our public statement about them as of November 2026.`,
           'Buyers still need a way to choose. The fair way is to list what we do, in words we can keep true, and to send you to the other product for their own account of what they do. This page is that list. It is not a teardown, a feature matrix we do not have, or a rewrite of anyone else’s homepage.',
         ],
         figure: figure(
@@ -540,8 +538,8 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
       {
         h2: 'Price, quota, and the missing free row',
         paragraphs: [
-          `Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations a month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. Free generations: ${FREE_QUOTA}. There is no third plan and no unpaid render pack. A search for a free alternative will land on a straight answer rather than a coupon we do not have.`,
-          'Commercial use is part of both paid plans, not an upgrade buried under an enterprise call. Watermarks are not held back as a punishment for a free tier, because that tier is not on the table. If your alternative checklist includes “can I ship the file to a client,” the license on Starter already says yes. You do not need Pro unless you need the extra quota, 4K, the transparent export, or the queue.',
+          `Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations a month, 720P standard, no watermark, and a commercial license. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations, 1080P, and a priority queue. Free generations: ${FREE_QUOTA}. There is no third plan and no unpaid render pack. A search for a free alternative will land on a straight answer rather than a coupon we do not have.`,
+          'Commercial use is part of both paid plans, not an upgrade buried under an enterprise call. Watermarks are not held back as a punishment for a free tier, because that tier is not on the table. If your alternative checklist includes “can I ship the file to a client,” the license on Starter already says yes. You do not need Pro unless you need the extra quota or the priority queue.',
         ],
       },
       {
@@ -549,7 +547,7 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
         paragraphs: [
           'Type the scene you would have taken to any other tool. Use the homepage prompt. Read it back. If the sentence is the one you want on screen, sign in and generate on the plan you chose. Click the element that came back wrong. Export MP4. Judge the alternative by that file, not by an adjective in a headline.',
           'Then, if you still need the other product in the decision, open their current documentation and answer the four table questions yourself. Bring those answers back and compare them to a yes, a yes, a yes, and a no. That is a comparison you can defend. A page full of guessed checkmarks is not.',
-          'An alternative is allowed to be narrower than the thing it is compared with. We are not claiming a larger feature set. We are claiming a path you can finish: a sentence, a click on the wrong word, and an MP4 with a commercial license. If that path is the one you needed, the rest of the category can stay unscored. If you needed a capability we have not said yes to, this is the wrong alternative, and the blank cells are your reminder to go look it up rather than assume.',
+          'An alternative is allowed to be narrower than the thing it is compared with. We are not claiming a larger feature set. We are claiming a path you can finish: a sentence, a click on the wrong word, and an MP4 with a commercial license. If that path is the one you needed, the rest of the category can stay unscored. If you needed a capability we have not said yes to, this is the wrong alternative, and the missing row is your reminder to go look it up rather than assume.',
         ],
       },
     ],
@@ -560,33 +558,33 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
     path: '/magnific-move-review',
     title: 'Magnific Move Review: What It Does and Where It Stops',
     description:
-      'A Magnific Move review that scores only documented claims. Unstated features stay blank. Aniform’s own yes and no columns are listed beside them.',
+      'A Magnific Move review that scores only documented claims. Other products are not given cells. Aniform’s own yes and no answers stand alone.',
     h1: 'Magnific Move Review',
     keyword: 'Magnific Move Review',
     sections: [
       {
         h2: 'What this review refuses to do',
         paragraphs: [
-          'A review that invents features is an ad with a serious tone. This one declines. We do not describe Magnific Move’s interface, we do not repeat their marketing lines, and we do not fill gaps with what a category of tools “usually” does. As of November 2026 the public table on our homepage shows a dash for them on prompt-to-video, editing text in a finished video, MP4 export, and a free plan. This review explains those dashes and then scores our own product in the same columns, where we do have the facts.',
-          'Dashes are allowed to stay dashes. Updating them requires a source we are willing to stand next to, not a memory of a demo or a sentence from a roundup. Until that source is in our own comparison, the honest review is mostly a boundary. Readers who wanted a verdict dressed as certainty will not find it here, and that is intentional.',
+          'A review that invents features is an ad with a serious tone. This one declines. We do not describe Magnific Move’s interface, we do not repeat their marketing lines, and we do not fill gaps with what a category of tools “usually” does. As of November 2026 the homepage table scores Aniform only. It does not show Magnific Move on prompt-to-video, editing text in a finished video, MP4 export, or a free plan. This review explains that boundary and then scores our own product, where we do have the facts.',
+          'We do not publish an empty cell in place of a fact. Adding another product requires a source we are willing to stand next to, not a memory of a demo or a sentence from a roundup. Until that source exists, the honest review is mostly a boundary. Readers who wanted a verdict dressed as certainty will not find it here, and that is intentional.',
         ],
         figure: figure(
           '/seo/page-magnific-review.webp',
-          'comparison table with blank competitor cells'
+          'Aniform answers for prompt, edit, export, and free plan'
         ),
       },
       {
         h2: 'The four questions, applied to us',
         paragraphs: [
-          `Prompt to video: yes. You describe a motion-graphics scene and ${PRODUCT_NAME} generates a first version. Edit text in the finished video: yes. You click the element and retype it, and you can change color and timing without a new generation. MP4 export: yes. Starter is 1080p with no watermark. Pro adds 4K and a transparent background. Free plan: no. ${FREE_QUOTA} free generations. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations and a commercial license. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations and a priority queue.`,
+          `Prompt to video: yes. You describe a motion-graphics scene and ${PRODUCT_NAME} generates a first version. Edit text in the finished video: yes. You click the element and retype it, and you can change color and timing without a new generation. MP4 export: yes. Starter is 720P with no watermark. 1080P counts as two generations. Pro adds a priority queue. Free plan: no. ${FREE_QUOTA} free generations. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations and a commercial license. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations and a priority queue.`,
           'Those four answers are the review we can publish without borrowing anyone else’s product. They are also the answers a buyer can check by reading the pricing block and using the editor. If one of them changes, the table and this page have to change together. A review that drifts away from the price list is how free tiers get invented by accident.',
         ],
       },
       {
         h2: 'Where a generated video usually stops',
         paragraphs: [
-          'Generated motion stops being useful at the moment a required word is wrong and the tool offers only “try again.” That is the stop this product is built to move. The stop we will not pretend to measure is someone else’s. If Magnific Move already lets you edit finished text, our dash is ignorance, not an attack. If it does not, their customers already know, and they do not need us to announce it without a citation.',
-          'Other rows in the same table — Jitter, Opus Clip, and easymotion — are treated the same way. Familiar names are not permission to score them. A review page with one famous name in the title still does not earn the right to invent the rest of the category. The footnote on the table applies here: publicly documented behaviour, November 2026, and it may change.',
+          'Generated motion stops being useful at the moment a required word is wrong and the tool offers only “try again.” That is the stop this product is built to move. The stop we will not pretend to measure is someone else’s. If Magnific Move already lets you edit finished text, our silence is not an attack. If it does not, their customers already know, and they do not need us to announce it without a citation.',
+          'Jitter, Opus Clip, and easymotion are not rows on the homepage table. Familiar names are not permission to score them. A review page with one famous name in the title still does not earn the right to invent the rest of the category. The footnote on the Aniform table applies here: November 2026, and it may change.',
         ],
       },
       {
@@ -594,7 +592,7 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
         paragraphs: [
           'Use this page as a checklist, not a winner’s podium. Write down the four questions. Fill our row from the paragraphs above. Fill any other row only from documents you have read this month. If a cell stays empty, leave it empty in the notes you send a client. Empty is a real status. It means you have not verified the claim, which is a better position than repeating one.',
           `If the job is simply to leave with an MP4 you can still edit, you already have a product that says yes on the first three questions and no on the fourth. Start on the homepage, use Starter or Pro, and skip any guide that offers a free generation ${PRODUCT_NAME} does not sell.`,
-          'Revisit the dashes when the date in the footnote moves. A review that never updates is a review that slowly becomes fiction. Until then, quote our row if you need a source, and quote nothing about the other rows. The useful outcome of this page is a buyer who can tell a documented yes from an empty cell, and who will not pay for a free tier that was only a heading.',
+          'Revisit this boundary when the date in the footnote moves. A review that never updates is a review that slowly becomes fiction. Until then, quote our row if you need a source, and quote nothing about products we did not score. The useful outcome of this page is a buyer who can tell a documented yes from an unverified claim, and who will not pay for a free tier that was only a heading.',
         ],
       },
     ],
@@ -708,7 +706,7 @@ export const HOME_WHAT_IS = {
   paragraphs: [
     'Motion graphics are titles, shapes, icons, and short scenes that move on purpose. An ai motion graphics generator writes the first version of that scene from a sentence, so you start with a picture that already moves instead of an empty timeline and a stack of layers.',
     'The useful part comes after the first render. You describe the shot, generate it, then click a single element to retype the words, change a color, or shift when it appears. Nothing has to be rebuilt from a keyframe graph just because a price or a name was wrong.',
-    `When the scene is right, export an MP4. Starter covers 1080p with no watermark and a commercial license. Pro covers 4K, a transparent background, and a faster queue. The work is describe, generate, edit the elements, and export, not a class in timeline software.`,
+    `When the scene is right, export an MP4. Starter covers 720P with no watermark and a commercial license. 1080P counts as two generations. Pro adds a priority queue. The work is describe, generate, edit the elements, and export, not a class in timeline software.`,
   ],
 };
 
@@ -742,7 +740,7 @@ export const HOME_STEPS: {
     h3: 'Step 3: Export MP4',
     paragraphs: [
       [
-        `Download an MP4 when the edit is done. The file is a normal video you can post, embed, or hand to someone else. Starter exports 1080p with the watermark removed and a commercial license. Pro adds 4K, a transparent background, and a priority queue. Use an `,
+        `Download an MP4 when the edit is done. The file is a normal video you can post, embed, or hand to someone else. Starter exports 720P with the watermark removed and a commercial license. 1080P counts as two generations. Pro adds a priority queue. Use an `,
         {
           href: '/ai-motion-video-generator',
           anchor: 'AI Motion Video Generator',
@@ -780,12 +778,12 @@ export const HOME_AUDIENCE: { h3: string; paragraph: string }[] = [
   {
     h3: 'Agencies',
     paragraph:
-      'Clients change the line after they have approved the picture. Click the text, retype it, and export again under a commercial license instead of reopening a project. Starter covers a modest monthly count at 1080p. Pro is there when the account needs more renders, 4K, or a transparent file for someone else’s edit.',
+      'Clients change the line after they have approved the picture. Click the text, retype it, and export again under a commercial license instead of reopening a project. Starter covers a modest monthly count at 720P. Pro is there when the account needs more renders or a priority queue.',
   },
 ];
 
 export const HOME_COMPARISON_INTRO =
-  'The table below scores one product on four questions and leaves every other cell blank. A dash means this page is not stating that capability. Nothing here is a guess about another company’s feature list.';
+  'The table answers four questions about Aniform only. It does not score other products, and it does not leave blank cells for them.';
 
 export const HOME_COMPARISON_AFTER: RichParagraph = [
   'If you are comparing products by name, read ',
@@ -828,11 +826,11 @@ export function pricingPageModel(): {
     faq: [
       {
         question: 'Is there a free generation quota?',
-        answer: `${PRODUCT_NAME} does not offer a free generation quota. You can type a prompt before you sign in. Rendering a video spends a paid generation.`,
+        answer: `${PRODUCT_NAME} does not offer a free generation quota. You can type a prompt before you sign in. Rendering a video spends paid generations.`,
       },
       {
         question: 'What do the monthly plans include?',
-        answer: `Starter is ${PRICE_STARTER} and includes ${STARTER_QUOTA} generations each month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} and includes ${PRO_QUOTA} generations each month, 4K, transparent background export, and a priority queue.`,
+        answer: `Starter is ${PRICE_STARTER} and includes ${STARTER_QUOTA} generations each month. 720P is the standard export, with no watermark and a commercial license. Pro is ${PRICE_PRO} and includes ${PRO_QUOTA} generations each month, 1080P, and a priority queue. ${GENERATION_UNIT_COPY} ${PRICING_GRANDFATHER_NOTE}`,
       },
       {
         question: 'Are these monthly plans?',
@@ -846,11 +844,11 @@ export function homePlanCopy(): { h3: string; paragraph: string }[] {
   return [
     {
       h3: `Starter (${PRICE_STARTER})`,
-      paragraph: `${STARTER_QUOTA} generations each month, 1080p, no watermark, and a commercial license. This is the entry plan. Rendering a video uses one of those generations. Typing a prompt on the page does not.`,
+      paragraph: `${STARTER_QUOTA} generations each month. A generation is 5 seconds at 720P. 10 seconds counts as 2, and 1080P counts as 2, so a 10-second 1080P video counts as 4. An image does not add a generation. No watermark and a commercial license. 720P is the standard export. Typing a prompt on the page does not spend a generation.`,
     },
     {
       h3: `Pro (${PRICE_PRO})`,
-      paragraph: `${PRO_QUOTA} generations each month, 4K, transparent background export, and a priority queue. Use it when you need more renders, a larger master, or a file with the background removed.`,
+      paragraph: `${PRO_QUOTA} generations each month, 1080P, and a priority queue. The same count applies: 5-second 720P is 1, 1080P is 2, and 10-second 1080P is 4. Use Pro when you need more renders or a faster queue.`,
     },
   ];
 }
@@ -866,7 +864,7 @@ export function homeFaq(): FaqItem[] {
       question: 'Is there a free AI motion graphics generator?',
       answer: [
         [
-          `${freeNote} There is no complimentary render pack. Starter is ${PRICE_STARTER} with ${STARTER_QUOTA} generations a month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} with ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. You can type a prompt on this page before you sign in. Rendering a video spends a paid generation. The `,
+          `${freeNote} There is no complimentary render pack. Starter is ${PRICE_STARTER} with ${STARTER_QUOTA} generations a month at 720P, no watermark, and a commercial license. 1080P counts as two generations. Pro is ${PRICE_PRO} with ${PRO_QUOTA} generations, 1080P, and a priority queue. You can type a prompt on this page before you sign in. Rendering a video spends paid generations. The `,
           {
             href: '/motion-graphics-editor',
             anchor: 'Motion Graphics Editor',
@@ -878,7 +876,7 @@ export function homeFaq(): FaqItem[] {
     {
       question: 'How is this different from Magnific Move?',
       answer: [
-        `${PRODUCT_NAME} can turn a prompt into a video, let you edit text in that finished video, and export MP4. It does not offer a free plan. Magnific Move is listed in the table with a dash in every column, because this site does not assert those four behaviors for it. A dash is not a no and not a yes. Read the Magnific Move pages linked above for the boundary of what we will claim.`,
+        `${PRODUCT_NAME} can turn a prompt into a video, let you edit text in that finished video, and export MP4. It does not offer a free plan. This page does not score Magnific Move on those four questions. Read the Magnific Move pages linked above for the boundary of what we will claim.`,
       ],
     },
     {
@@ -896,7 +894,7 @@ export function homeFaq(): FaqItem[] {
     {
       question: 'What format can I export?',
       answer: [
-        `MP4. Starter exports at 1080p with no watermark. Pro adds 4K and a transparent background export. Both plans include a commercial license. There is no separate free-plan export, because there is no free plan.`,
+        `MP4. Starter’s standard export is 720P with no watermark. 1080P counts as two generations. Pro adds a priority queue. Both plans include a commercial license. There is no separate free-plan export, because there is no free plan.`,
       ],
     },
     {

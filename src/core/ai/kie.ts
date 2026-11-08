@@ -48,7 +48,22 @@ function normalizeKieSeedreamQuality(value: unknown): 'basic' | 'high' {
   return 'basic';
 }
 
-function normalizeKieVideoModel(model: string, imageToVideo: boolean): string {
+/** Kie market id for Seedance 1.0 Lite text-to-video. */
+export const KIE_SEEDANCE_LITE_TEXT_MODEL = 'bytedance/v1-lite-text-to-video';
+/** Kie market id for Seedance 1.0 Lite image-to-video. */
+export const KIE_SEEDANCE_LITE_IMAGE_MODEL = 'bytedance/v1-lite-image-to-video';
+
+const KIE_SEEDANCE_LITE_ASPECTS = ['16:9', '4:3', '1:1', '3:4', '9:16', '9:21'];
+
+export function normalizeKieVideoModel(
+  model: string,
+  imageToVideo: boolean
+): string {
+  if (model === 'seedance-1-0-lite') {
+    return imageToVideo
+      ? KIE_SEEDANCE_LITE_IMAGE_MODEL
+      : KIE_SEEDANCE_LITE_TEXT_MODEL;
+  }
   if (model === 'seedance-2-5') return 'bytedance/seedance-2-5';
   if (model === 'doubao-seedance-2-0') return 'bytedance/seedance-2';
   if (model === 'wan-3-0') return 'wan/3-0-video';
@@ -104,6 +119,9 @@ function normalizeKieVideoResolution(model: string, value: unknown): string {
 
 function normalizeKieVideoAspectRatio(model: string, value: unknown): string {
   const requested = String(value || '').trim();
+  if (model === 'seedance-1-0-lite') {
+    return KIE_SEEDANCE_LITE_ASPECTS.includes(requested) ? requested : '16:9';
+  }
   if (requested && requested !== 'Auto' && requested !== 'landscape') {
     return requested;
   }
@@ -339,6 +357,7 @@ export class KieProvider implements AIProvider {
         params.options.image_urls) ||
       (params.options?.image_url ? [params.options.image_url] : []);
 
+    const isSeedanceLite = params.model === 'seedance-1-0-lite';
     const isSeedance25 = params.model === 'seedance-2-5';
     const isDoubaoSeedance = params.model === 'doubao-seedance-2-0';
     const isWan30 = params.model === 'wan-3-0';
@@ -354,7 +373,12 @@ export class KieProvider implements AIProvider {
       input: {},
     };
 
-    if (!isWan27 && !isHailuo23 && !(isKling30Turbo && hasInputImages)) {
+    const skipAspectRatio =
+      isWan27 ||
+      isHailuo23 ||
+      (isKling30Turbo && hasInputImages) ||
+      (isSeedanceLite && hasInputImages);
+    if (!skipAspectRatio) {
       payload.input.aspect_ratio = normalizeKieVideoAspectRatio(
         params.model,
         params.options?.aspect_ratio
@@ -389,23 +413,32 @@ export class KieProvider implements AIProvider {
         } else if (isWan27) {
           if (inputImages[0]) payload.input.first_frame_url = inputImages[0];
           if (inputImages[1]) payload.input.last_frame_url = inputImages[1];
-        } else if (isHailuo23) {
+        } else if (isHailuo23 || isSeedanceLite) {
           if (inputImages[0]) payload.input.image_url = inputImages[0];
+          if (isSeedanceLite && inputImages[1]) {
+            payload.input.end_image_url = inputImages[1];
+          }
         } else if (isKling30Turbo) {
           payload.input.image_urls = inputImages;
         } else {
           // Seedance 2.5 and Wan 3.0 text endpoints do not define image input.
         }
       }
-      if (options.aspect_ratio) {
-        if (!isWan27 && !isHailuo23 && !(isKling30Turbo && hasInputImages)) {
-          payload.input.aspect_ratio = normalizeKieVideoAspectRatio(
-            params.model,
-            options.aspect_ratio
-          );
-        }
+      if (options.aspect_ratio && !skipAspectRatio) {
+        payload.input.aspect_ratio = normalizeKieVideoAspectRatio(
+          params.model,
+          options.aspect_ratio
+        );
       }
-      if (options.duration && !isHailuoText) {
+      if (isSeedanceLite) {
+        const seconds = parseInt(String(options.duration || '5'), 10);
+        payload.input.duration =
+          Number.isFinite(seconds) && seconds >= 10 ? '10' : '5';
+        payload.input.resolution = normalizeKieVideoResolution(
+          params.model,
+          options.resolution || '720p'
+        );
+      } else if (options.duration && !isHailuoText) {
         const duration = parseInt(String(options.duration), 10);
         if (Number.isFinite(duration)) {
           if (isKling30Turbo || isHailuo23) {
@@ -427,6 +460,10 @@ export class KieProvider implements AIProvider {
           );
         }
       }
+    }
+    if (isSeedanceLite) {
+      if (!payload.input.duration) payload.input.duration = '5';
+      if (!payload.input.resolution) payload.input.resolution = '720p';
     }
     if (isMinimaxH3) {
       if (!payload.input.duration) payload.input.duration = 6;

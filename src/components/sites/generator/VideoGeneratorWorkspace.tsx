@@ -17,10 +17,12 @@ import { QuickAuthModal } from '@/components/sites/creation/QuickAuthModal';
 import {
   AI_MODELS,
   calculateCredits,
+  DEFAULT_VIDEO_MODEL_ID,
   getModelSupportedDurations,
   getModelSupportedResolutions,
   getVideoModelsList,
   ModelConfig,
+  preferredOption,
   supportsModelAspectRatio,
 } from '@/components/sites/shared/models';
 
@@ -65,7 +67,7 @@ export function VideoGeneratorWorkspace({
     if (search?.model && AI_MODELS[search.model]?.type === 'video') {
       return search.model;
     }
-    return 'seedance-2-5';
+    return DEFAULT_VIDEO_MODEL_ID;
   });
 
   useEffect(() => {
@@ -160,7 +162,11 @@ export function VideoGeneratorWorkspace({
       modelId,
       publicConfig?.active_ai_provider
     );
-    const nextResolution = nextResolutions[0] || resolution;
+    const nextResolution = preferredOption(
+      nextResolutions,
+      AI_MODELS[modelId]?.defaultResolution,
+      resolution
+    );
     const nextDurations = getModelSupportedDurations(
       modelId,
       publicConfig?.active_ai_provider,
@@ -168,7 +174,13 @@ export function VideoGeneratorWorkspace({
     );
     setSelectedModelId(modelId);
     setResolution(nextResolution);
-    setDuration(nextDurations[0] || duration);
+    setDuration(
+      preferredOption(
+        nextDurations,
+        AI_MODELS[modelId]?.defaultDuration || '5s',
+        duration
+      )
+    );
   };
 
   const handleResolutionChange = (nextResolution: string) => {

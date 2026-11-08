@@ -89,6 +89,24 @@ export const AI_MODELS: Record<string, ModelConfig> = {
   },
 
   // Video Models
+  // Default. Kie maps this id to bytedance/v1-lite-text-to-video
+  // (image input: bytedance/v1-lite-image-to-video).
+  'seedance-1-0-lite': {
+    id: 'seedance-1-0-lite',
+    name: 'Seedance 1.0 Lite',
+    icon: '/oss/model/icon/bytedance-80.webp',
+    credits: 1,
+    badge: 'Default',
+    type: 'video',
+    supportsFirstLastFrame: true,
+    maxImages: 2,
+    supportedDurations: ['5s', '10s'],
+    supportedResolutions: ['720P', '1080P', '480P'],
+    defaultResolution: '720P',
+    defaultDuration: '5s',
+    description:
+      'Seedance 1.0 Lite. Default is 720P, 5 seconds, 16:9. A 5-second 720P video is 1 credit.',
+  },
   'seedance-2-5': {
     id: 'seedance-2-5',
     name: 'Seedance 2.5',
@@ -279,7 +297,10 @@ export function getImageModelsList(
   return IMAGE_MODELS_LIST;
 }
 
+export const DEFAULT_VIDEO_MODEL_ID = 'seedance-1-0-lite';
+
 export const VIDEO_MODELS_LIST: ModelConfig[] = [
+  AI_MODELS['seedance-1-0-lite'],
   AI_MODELS['seedance-2-5'],
   AI_MODELS['wan-3-0'],
   AI_MODELS['minimax-h3'],
@@ -290,7 +311,57 @@ export const VIDEO_MODELS_LIST: ModelConfig[] = [
 ];
 
 export function getVideoModelsList(provider?: string): ModelConfig[] {
+  // Seedance 1.0 Lite is a Kie model id. Hide it on other providers.
+  if (provider && provider !== 'kie') {
+    return VIDEO_MODELS_LIST.filter(
+      (model) => model.id !== DEFAULT_VIDEO_MODEL_ID
+    );
+  }
   return VIDEO_MODELS_LIST;
+}
+
+/**
+ * Video billing unit. 5 seconds at 720P (or lower) is 1.
+ * Duration and resolution multiply: 10s = ×2, 1080P (and higher) = ×2,
+ * so 10s at 1080P is 4. Image input is not a factor.
+ */
+export function videoGenerationUnits(params?: {
+  duration?: string;
+  resolution?: string;
+  /** Accepted and ignored. Uploading an image does not add units. */
+  hasImageInput?: boolean;
+}): number {
+  const seconds = Math.max(
+    1,
+    parseInt(String(params?.duration || '5'), 10) || 5
+  );
+  const durationFactor = Math.max(1, Math.ceil(seconds / 5));
+  const resolution = String(params?.resolution || '')
+    .trim()
+    .toLowerCase();
+  const resolutionFactor =
+    resolution === '1080p' ||
+    resolution === '2k' ||
+    resolution === '4k' ||
+    resolution === '2160p'
+      ? 2
+      : 1;
+  return durationFactor * resolutionFactor;
+}
+
+/** Prefer a model's own default when it is one of the options. */
+export function preferredOption(
+  options: string[],
+  preferred: string | undefined,
+  fallback: string
+): string {
+  if (options.length === 0) return fallback;
+  const wanted = preferred?.trim().toLowerCase();
+  if (wanted) {
+    const match = options.find((option) => option.toLowerCase() === wanted);
+    if (match) return match;
+  }
+  return options[0] ?? fallback;
 }
 
 export const KIE_MUSIC_MODELS_LIST: ModelConfig[] = [
@@ -324,6 +395,8 @@ export function calculateCredits(
   params?: {
     duration?: string;
     resolution?: string;
+    /** Ignored for video. Image input does not add generation units. */
+    hasImageInput?: boolean;
   }
 ): number {
   if (type === 'image') {
@@ -337,32 +410,7 @@ export function calculateCredits(
   }
 
   if (type === 'video') {
-    const perFiveSecondsAt720p: Record<string, number> = {
-      'seedance-2-5': 90,
-      'doubao-seedance-2-0': 85,
-      'wan-3-0': 26,
-      'kling-3-0-turbo': 35,
-      'minimax-h3': 30,
-      'minimax-hailuo-2-3': 30,
-      'wan-2-7': 21,
-    };
-    const base = perFiveSecondsAt720p[modelId] ?? 45;
-    const res = params?.resolution?.toUpperCase();
-    const resolutionMultiplier =
-      res === '480P'
-        ? 0.5
-        : res === '1080P'
-          ? 2
-          : res === '2K'
-            ? 1.7
-            : res === '4K'
-              ? 3.5
-              : 1;
-    const duration = Math.max(
-      1,
-      parseInt(String(params?.duration || '5'), 10) || 5
-    );
-    return Math.ceil((base * resolutionMultiplier * duration) / 5);
+    return videoGenerationUnits(params);
   }
 
   if (type === 'music') {
@@ -385,6 +433,7 @@ export function getModelSupportedResolutions(
   const model = AI_MODELS[modelId];
   if (!model) return EMPTY_STRING_ARRAY;
   if (provider === 'kie' && model.type === 'video') {
+    if (modelId === 'seedance-1-0-lite') return ['720P', '1080P', '480P'];
     if (modelId === 'wan-3-0') return ['480P', '720P', '1080P'];
     // KIE MiniMax H3 only accepts 768P / 2K (no 1080P tier)
     if (modelId === 'minimax-h3') return ['768P', '2K'];
@@ -455,6 +504,8 @@ export function supportsModelAspectRatio(
   provider?: string,
   hasImageInput = false
 ): boolean {
+  // Lite image-to-video takes the frame from the image. Kie has no aspect field.
+  if (modelId === 'seedance-1-0-lite' && hasImageInput) return false;
   if (provider !== 'apimart' || !modelId) return true;
   if (modelId === 'minimax-hailuo-2-3') return false;
   if (!hasImageInput) return true;
@@ -492,6 +543,7 @@ export function getModelMaxPromptLength(
       'gpt-image-2-5-sunburst-image-to-image': 20000,
       'qwen-image-3-0': 5000,
       'seedream-5-0-pro': 5000,
+      'seedance-1-0-lite': 10000,
       'seedance-2-5': 30000,
       'wan-3-0': 20000,
       'kling-3-0-turbo': 2500,

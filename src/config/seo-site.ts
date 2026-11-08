@@ -19,8 +19,16 @@ export const SITE_URL = 'https://aniform.online';
 export const FREE_QUOTA = 0;
 export const PRICE_STARTER = '$19/mo';
 export const PRICE_PRO = '$49/mo';
-export const STARTER_QUOTA = 60;
-export const PRO_QUOTA = 200;
+export const STARTER_QUOTA = 40;
+export const PRO_QUOTA = 100;
+
+/** One paid generation, before duration and resolution multipliers. */
+export const GENERATION_UNIT_COPY =
+  'One generation is a 5-second 720P text-to-video. 10 seconds counts as 2 generations. 1080P counts as 2. A 10-second 1080P video counts as 4. An image input does not add generations. 720P is the standard export. 1080P is not included as an unlimited extra.';
+
+/** Copy only. Renewals already grant the credits stored on the subscription. */
+export const PRICING_GRANDFATHER_NOTE =
+  'Existing paid subscribers keep the monthly allotment already on their subscription. New subscribers receive these quotas.';
 
 export const HOME_TITLE =
   'AI Motion Graphics Generator – Type a Prompt, Get a Video';

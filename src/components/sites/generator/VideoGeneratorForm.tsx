@@ -409,6 +409,9 @@ export function VideoGeneratorForm({
             </>
           )}
         </Button>
+        <p className="text-muted-foreground mt-2 text-xs leading-5">
+          {m['app.generator.credit_rule']()}
+        </p>
       </div>
     </div>
   );

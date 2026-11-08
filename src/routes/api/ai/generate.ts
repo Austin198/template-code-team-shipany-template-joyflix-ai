@@ -138,7 +138,9 @@ async function POST({ request }: { request: Request }) {
         delete options.resolution;
       }
       const isSeedance =
-        typeof model === 'string' && model.includes('seedance');
+        typeof model === 'string' &&
+        model.includes('seedance') &&
+        model !== 'seedance-1-0-lite';
       const hasImage = normalizedImageUrls.length > 0;
       if (isSeedance && hasImage) {
         options.aspect_ratio = 'adaptive';
@@ -245,6 +247,8 @@ async function POST({ request }: { request: Request }) {
     const costCredits = calculateCredits(model, mediaType, {
       duration: options?.duration,
       resolution: options?.resolution,
+      // Image input does not add generation units.
+      hasImageInput: normalizedImageUrls.length > 0,
     });
 
     dbTaskId = getUuid();
