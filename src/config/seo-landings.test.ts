@@ -13,12 +13,15 @@ import {
   homeFaq,
   paragraphText,
   pricingPageModel,
+  relatedStylePages,
   retiredSeoTarget,
   SEO_PATH_REDIRECT_STATUS,
   SEO_SLUG_PAGES,
   seoPathRedirect,
   seoSitemapPaths,
   STYLE_PAGES,
+  STYLE_PLAN_LINE,
+  STYLE_RELATED,
 } from '@/config/seo-landings';
 import {
   absoluteUrl,
@@ -393,6 +396,75 @@ describe('seo landings', () => {
     );
     expect(en['app.generator.video_title']).toBe(AI_VIDEO_GENERATOR_H1);
     expect(en['ai.video.metadata.title']).toBe(AI_VIDEO_GENERATOR_TITLE);
+  });
+
+  it('cross-links the six style pages and states plans once', () => {
+    const incoming = new Map(STYLE_PAGES.map((page) => [page.slug, 0]));
+    const seen = new Set<string>();
+    const queue = [STYLE_PAGES[0]!.slug];
+    while (queue.length > 0) {
+      const slug = queue.pop()!;
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      const targets = STYLE_RELATED[slug as keyof typeof STYLE_RELATED];
+      for (const next of targets) queue.push(next);
+      for (const [from, links] of Object.entries(STYLE_RELATED)) {
+        if (links.includes(slug as (typeof links)[number])) queue.push(from);
+      }
+    }
+    expect([...seen].sort()).toEqual(
+      STYLE_PAGES.map((page) => page.slug).sort()
+    );
+    expect(STYLE_RELATED['logo-animation']).toEqual([
+      'youtube-intro',
+      'kinetic-typography',
+      'social-media-ads',
+    ]);
+
+    for (const page of STYLE_PAGES) {
+      expect(page.navLabel, page.slug).toBeTruthy();
+      expect(page.path).toBe(`/motion-graphics/${page.slug}`);
+      const related = relatedStylePages(page.slug);
+      const slugs = related.map((item) => item.slug);
+      expect(slugs, page.slug).toHaveLength(3);
+      expect(new Set(slugs).size, page.slug).toBe(3);
+      expect(slugs, page.slug).not.toContain(page.slug);
+      for (const item of related) {
+        expect(item.path).toBe(`/motion-graphics/${item.slug}`);
+        expect(item.navLabel).toBeTruthy();
+        incoming.set(item.slug, (incoming.get(item.slug) ?? 0) + 1);
+      }
+      const body = page.sections
+        .flatMap((section) =>
+          section.paragraphs.map((paragraph) => paragraphText(paragraph))
+        )
+        .join('\n')
+        .toLowerCase();
+      expect(body, page.slug).not.toMatch(/\$19|\$49/);
+      expect(body, page.slug).not.toMatch(
+        /free generation|free quota|for free|no free/
+      );
+    }
+
+    for (const [slug, count] of incoming) {
+      expect(count, slug).toBeGreaterThan(0);
+    }
+
+    const line = paragraphText(STYLE_PLAN_LINE);
+    expect(line.match(/no free generation quota/gi)).toHaveLength(1);
+    expect(line).toContain('$19/mo');
+    expect(line).toContain('60 generations');
+    expect(line).toContain('$49/mo');
+    expect(line).toContain('200 generations');
+    expect(line).toContain('pricing');
+    expect(STYLE_PAGES.map((page) => page.navLabel)).toEqual([
+      'Social ads',
+      'YouTube intros',
+      'Explainer videos',
+      'Logo animation',
+      'Kinetic typography',
+      'Data videos',
+    ]);
   });
 
   it('keeps pricing on the two monthly plans and off credit packs', () => {

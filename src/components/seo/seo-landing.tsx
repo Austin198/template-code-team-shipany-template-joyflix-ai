@@ -1,5 +1,9 @@
 import { Link } from '@/core/i18n/navigation';
-import type { SeoPage } from '@/config/seo-landings';
+import {
+  relatedStylePages,
+  STYLE_PLAN_LINE,
+  type SeoPage,
+} from '@/config/seo-landings';
 import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
 
@@ -26,6 +30,13 @@ export function SeoLanding({ page }: { page: SeoPage }) {
           {page.h1}
         </h1>
 
+        {page.kind === 'style' ? (
+          <RichText
+            paragraph={STYLE_PLAN_LINE}
+            className="mt-4 text-base leading-7"
+          />
+        ) : null}
+
         {page.sections.map((section) => (
           <section key={section.h2} className="mt-12">
             <h2 className="text-2xl font-semibold tracking-tight">
@@ -46,8 +57,42 @@ export function SeoLanding({ page }: { page: SeoPage }) {
             ) : null}
           </section>
         ))}
+
+        {page.kind === 'style' ? <OtherScenarios slug={page.slug} /> : null}
       </main>
       <Footer />
     </div>
+  );
+}
+
+function OtherScenarios({ slug }: { slug: string }) {
+  const related = relatedStylePages(slug);
+  if (related.length === 0) return null;
+
+  return (
+    <section className="mt-12" aria-labelledby="other-scenarios">
+      <h2
+        id="other-scenarios"
+        className="text-2xl font-semibold tracking-tight"
+      >
+        Other scenarios
+      </h2>
+      <p className="mt-4 text-base leading-7">
+        Nearby jobs use the same path: describe the scene, edit the element,
+        export MP4.
+      </p>
+      <ul className="mt-4 flex flex-col gap-3 text-base leading-7">
+        {related.map((item) => (
+          <li key={item.slug}>
+            <Link
+              href={item.path}
+              className="font-medium underline underline-offset-4"
+            >
+              {item.navLabel ?? item.keyword}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

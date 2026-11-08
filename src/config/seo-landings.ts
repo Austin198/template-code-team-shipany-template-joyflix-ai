@@ -38,6 +38,8 @@ export type SeoPage = {
   description: string;
   h1: string;
   keyword: string;
+  /** Short label for the homepage scenario list and style-page cross-links. */
+  navLabel?: string;
   /** Short home-card copy for style pages. Not repeated as the page opening. */
   summary?: string;
   sections: SeoSection[];
@@ -112,6 +114,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       'Create social media ad motion graphics from a sentence. Update the offer text, colors, and timing, then export an MP4 for the feed.',
     h1: 'Social Media Ad Motion Graphics',
     keyword: 'Social media ads',
+    navLabel: 'Social ads',
     summary:
       'Social media ads have to stay readable while they move, and the offer line usually changes after the first cut. Describe the product, the on-screen words, and the frame shape. Then click the text to update a price or a button label and export an MP4 for the placement you are buying.',
     sections: [
@@ -133,7 +136,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       {
         h2: 'Export a file the ad account accepts',
         paragraphs: [
-          `Export MP4 when the line is final. Starter on ${PRODUCT_NAME} is ${PRICE_STARTER} for ${STARTER_QUOTA} generations a month at 1080p, with no watermark and a commercial license, which covers ordinary paid social. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue when several variants are due the same day. There is no free generation quota under those plans.`,
+          'Export MP4 when the line is final. The offer is the whole spot: the price, the deadline, or the short benefit, written the way it has to appear, including the numerals you will not round. When a test changes that line, come back to the same frame. The picture you already approved is still the ad.',
           'Hand the MP4 to the person running the account. They should not need your project file, a font install, or a timeline. If a later test needs a different price, come back to the same elements, retype, and export again. The style stays a short, readable offer, not a miniature brand film.',
           'Square and vertical crops hide lines that were written for a wide frame. Watch the MP4 at the size of a phone and check the edges, including the space a platform covers with its own buttons. If a word is clipped, shorten that element instead of shrinking the whole scene. The offer has to survive the placement you are actually buying.',
         ],
@@ -149,6 +152,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       'Make a YouTube intro with motion graphics. Type the channel name, fix the title card, and export a short MP4 open.',
     h1: 'YouTube Intro Motion Graphics',
     keyword: 'YouTube intro',
+    navLabel: 'YouTube intros',
     summary:
       'A YouTube intro is a few seconds that names the channel and then gets out of the way. Describe the title card, generate the open, and retype the show name or the episode label if it is wrong. Export a short MP4 you can place in front of the edit without rebuilding a timeline.',
     sections: [
@@ -170,7 +174,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       {
         h2: 'Drop an MP4 in front of the edit',
         paragraphs: [
-          `Export MP4 and hand it to the editor, or drop it on the timeline yourself. Starter (${PRICE_STARTER}, ${STARTER_QUOTA} generations, 1080p, no watermark, commercial license) is enough for a channel open. Pro (${PRICE_PRO}, ${PRO_QUOTA} generations, 4K, transparent background, priority queue) fits a master that has to sit on top of footage. ${PRODUCT_NAME} does not include a free generation allowance for these renders.`,
+          'Export MP4 and hand it to the editor, or drop it on the timeline yourself. An intro only has to name the channel, show a mark people will recognize next time, and then get out of the way. Episode numbers and guest labels change. The card they sit on should stay the one viewers already know.',
           'The editor should receive a normal video file. They should not need to match your fonts or reopen a motion project to publish the episode. When next month’s title changes, edit the text element and export a new MP4. The open stays recognizable because the scene did not have to be reinvented.',
           'Keep a still of the last frame next to the moving file. That still is what you check when a new episode label is only one character different and easy to miss in motion. If the still reads cleanly, the open is done. If it does not, fix the text element before the video goes in front of an upload.',
         ],
@@ -186,6 +190,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       'Turn one product idea into an explainer made of motion graphics. Edit the labels and timing, then export MP4.',
     h1: 'Explainer Video Motion Graphics',
     keyword: 'Explainer video',
+    navLabel: 'Explainer videos',
     summary:
       'An explainer video walks through one idea with labels a viewer can actually read. Describe the steps in order, generate the scene, and click any label that needs a clearer word. Export an MP4 your site, deck, or sales note can play without opening a timeline.',
     sections: [
@@ -207,7 +212,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       {
         h2: 'A file people can press play on',
         paragraphs: [
-          `Export MP4. Starter is ${PRICE_STARTER} and includes ${STARTER_QUOTA} generations, 1080p, no watermark, and a commercial license, so the explainer can live on a marketing page. Pro is ${PRICE_PRO} and includes ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. ${PRODUCT_NAME} has no free generation quota, so plan the draft in writing before you spend a render.`,
+          'Export MP4 when the sequence still follows the one claim you briefed. A new person should be able to say that claim back after a single play, in the same order, using the nouns your team already says out loud. If a label is the only thing that moved, edit the label. Leave the path through the idea alone. The file is for someone who does not already know the product, so one clear path beats a second idea squeezed into the same minute.',
           'Publish the MP4 where the question is asked. A help article, a pricing page, and a sales follow-up can share the same file. When the product name changes, edit the text in the finished video and export again. The explanation stays stable because you did not have to restage it.',
           'Read the labels out loud once before you publish. An explainer that looks tidy can still use a noun your audience does not use. Replace that noun in the element, export again, and keep the sequence. The picture was never the part that needed a new idea.',
         ],
@@ -223,6 +228,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       'Animate a logo with motion graphics. Describe the reveal, correct the wordmark, and export a clean MP4.',
     h1: 'Logo Animation Motion Graphics',
     keyword: 'Logo animation',
+    navLabel: 'Logo animation',
     summary:
       'A logo animation reveals a mark and a wordmark without turning into a long brand film. Describe how the logo enters, generate the motion, then correct the spelling or the color on the wordmark. Export an MP4 that stays sharp on a site header, a title card, or the end of an ad.',
     sections: [
@@ -244,7 +250,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       {
         h2: 'Export for the header, the ad, or the editor',
         paragraphs: [
-          `Export MP4 for a site, a deck, or the end of a spot. Starter at ${PRICE_STARTER} includes ${STARTER_QUOTA} generations a month, 1080p, no watermark, and a commercial license. Pro at ${PRICE_PRO} includes ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. Use Pro when the logo has to composite over other footage. ${PRODUCT_NAME} does not give away generations for free.`,
+          'Export MP4 for a site, a deck, or the end of a spot. Watch the hold as if you had never seen the mark. The wordmark should be obvious after the motion stops, spelled the way you use it in public. If the entrance is clever and the still name is not, the reveal is not finished. Simplify until the settled frame is the thing you remember, then hand off that name rather than a project someone else has to rebuild.',
           'Deliver the file, not a project. A webmaster and a video editor can both use an MP4. When the wordmark gains a new letter after a rename, edit that element and export again so the reveal you liked does not get redesigned by accident.',
           'Check the hold on a dark background and a light one if the logo will sit in both places. A move that disappears into a white header is not finished. Recolor the element or export the transparent Pro file and let the page supply the background, instead of generating a second logo you did not ask for.',
         ],
@@ -260,6 +266,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       'Create kinetic typography from the sentence itself. Retype any word, shift color and timing, and export MP4.',
     h1: 'Kinetic Typography Motion Graphics',
     keyword: 'Kinetic typography',
+    navLabel: 'Kinetic typography',
     summary:
       'Kinetic typography lets the sentence do the performing. Write the line you want seen, generate the motion, then retype any word that should hit harder. Change color and timing on that word and export an MP4 that can run without a voiceover if the text is doing the talking.',
     sections: [
@@ -284,7 +291,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       {
         h2: 'An MP4 that can play without narration',
         paragraphs: [
-          `Export MP4 when the line reads cleanly with the sound off, because many people will meet it that way. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. ${PRODUCT_NAME} does not include free generations, so revise the sentence on the page before you render again.`,
+          'Export MP4 when the line reads cleanly with the sound off, because many people will meet it that way. The stressed word should be the one you wrote, arriving on the beat you meant, and staying long enough to read at a glance. A question and a command are different hits. Do not let the motion treat them as the same sentence.',
           'Use the file in an ad, a lyric-style caption, or a title sequence. If legal or brand asks for one word to change, edit that word in the finished video and export a replacement. The motion you approved does not have to be thrown away with the draft copy.',
           'If the line is doing the talking, mute your speakers and read it at the speed the motion allows. A word that flashes past is a word you should hold longer, not a word you should replace with a synonym. Timing is part of the sentence. Change it on the element before you ask for a new generation.',
         ],
@@ -300,6 +307,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       'Present one statistic as motion graphics. Update the number and label after generation, then export MP4.',
     h1: 'Data and Stats Motion Graphics',
     keyword: 'Data & stats video',
+    navLabel: 'Data videos',
     summary:
       'A data and stats video puts one figure on screen and makes the comparison obvious. Describe the number, the label, and the context around it. After generation, click the figure when the source changes, adjust color or timing, and export an MP4 that still matches the citation.',
     sections: [
@@ -321,7 +329,7 @@ export const STYLE_PAGES: readonly SeoPage[] = [
       {
         h2: 'Export the citation as a normal video',
         paragraphs: [
-          `Export MP4 and place it next to the written source. Starter at ${PRICE_STARTER} includes ${STARTER_QUOTA} generations, 1080p, no watermark, and a commercial license. Pro at ${PRICE_PRO} includes ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. ${PRODUCT_NAME} has no free generation quota. Draft the number on paper, or in the prompt field, before you spend a render on a figure you have not checked.`,
+          'Export MP4 and place it next to the written source. One figure is the whole video: the number, the unit, and a label short enough to repeat after the clip ends. A second metric, or a paragraph of methodology, does not belong in the moving frame. When the report updates, change the citation in this picture instead of starting a new style. The frame should still agree with the report when someone screenshots it on its own.',
           'If the number was wrong, do not publish a correction as a second style. Retype the figure in the video you already have and export again. The audience sees the same frame with the right value, which is what a correction should look like.',
           'Put the unit in the label, not only in the caption under the post. A moving 12 can mean percent, dollars, or weeks, and the frame is often screenshotted without the caption. Click the label until the unit is visible, then export. The citation and the picture should agree even when they are separated.',
         ],
@@ -329,6 +337,41 @@ export const STYLE_PAGES: readonly SeoPage[] = [
     ],
   },
 ];
+
+/** One commercial line for every style page. Prices live in full on /pricing. */
+export const STYLE_PLAN_LINE: RichParagraph = [
+  `Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations. There is no free generation quota. See `,
+  { href: '/pricing', anchor: 'pricing' },
+  ' for what each plan includes.',
+];
+
+/**
+ * Three related style pages per scenario. The undirected graph is connected
+ * and every page is linked from at least one other page.
+ */
+export const STYLE_RELATED: Record<
+  StyleSlug,
+  readonly [StyleSlug, StyleSlug, StyleSlug]
+> = {
+  'social-media-ads': [
+    'kinetic-typography',
+    'explainer-video',
+    'data-stats-video',
+  ],
+  'youtube-intro': ['logo-animation', 'kinetic-typography', 'social-media-ads'],
+  'explainer-video': [
+    'data-stats-video',
+    'social-media-ads',
+    'kinetic-typography',
+  ],
+  'logo-animation': ['youtube-intro', 'kinetic-typography', 'social-media-ads'],
+  'kinetic-typography': ['logo-animation', 'youtube-intro', 'social-media-ads'],
+  'data-stats-video': [
+    'explainer-video',
+    'social-media-ads',
+    'kinetic-typography',
+  ],
+};
 
 export const SEO_SLUG_PAGES: readonly SeoPage[] = [
   {
@@ -564,6 +607,14 @@ const seoBySlug = new Map(SEO_SLUG_PAGES.map((page) => [page.slug, page]));
 export function getStylePage(slug: string): SeoPage | undefined {
   if (!isStyleSlug(slug)) return undefined;
   return styleBySlug.get(slug);
+}
+
+export function relatedStylePages(slug: string): SeoPage[] {
+  if (!isStyleSlug(slug)) return [];
+  return STYLE_RELATED[slug].flatMap((related) => {
+    const page = styleBySlug.get(related);
+    return page ? [page] : [];
+  });
 }
 
 export function getSeoPage(slug: string): SeoPage | undefined {
@@ -881,6 +932,7 @@ export function homeBodyText(): string {
       parts.push(paragraphText(paragraph));
   }
   parts.push('Motion graphics styles', HOME_STYLES_INTRO);
+  for (const page of STYLE_PAGES) parts.push(page.navLabel ?? '');
   for (const page of STYLE_PAGES) {
     parts.push(page.keyword, page.summary ?? '');
   }
