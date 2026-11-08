@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
+import { SITE_URL } from '@/config/seo-site';
 import { m } from '@/paraglide/messages.js';
 import { getLocale, locales, localizeUrl } from '@/paraglide/runtime.js';
 import { Footer } from '@/blocks/footer';
@@ -23,7 +24,7 @@ export const Route = createFileRoute('/blog/')({
   head: ({ loaderData }) => {
     const locale = loaderData?.locale;
     const urlFor = (loc: string) =>
-      localizeUrl(`${envConfigs.app_url}/blog`, { locale: loc as any }).href;
+      localizeUrl(`${SITE_URL}/blog`, { locale: loc as any }).href;
     return {
       meta: [
         {

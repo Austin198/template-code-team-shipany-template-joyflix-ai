@@ -4,6 +4,8 @@ import {
   isStyleSlug,
   PRICE_PRO,
   PRICE_STARTER,
+  PRICING_DESCRIPTION,
+  PRICING_TITLE,
   PRO_QUOTA,
   PRODUCT_NAME,
   STARTER_QUOTA,
@@ -757,6 +759,38 @@ export const HOME_COMPARISON_AFTER: RichParagraph = [
 
 export function homePricingIntro(): string {
   return `Two paid plans. ${PRODUCT_NAME} does not include a free generation quota, so this section has no free row.`;
+}
+
+/** Public /pricing copy. Same commercial facts as the homepage, no credit packs. */
+export function pricingPageModel(): {
+  h1: string;
+  title: string;
+  description: string;
+  intro: string;
+  plans: { h3: string; paragraph: string }[];
+  faq: { question: string; answer: string }[];
+} {
+  return {
+    h1: PRICING_TITLE,
+    title: PRICING_TITLE,
+    description: PRICING_DESCRIPTION,
+    intro: `Two monthly plans. ${PRODUCT_NAME} does not include a free generation quota.`,
+    plans: homePlanCopy(),
+    faq: [
+      {
+        question: 'Is there a free generation quota?',
+        answer: `${PRODUCT_NAME} does not offer a free generation quota. You can type a prompt before you sign in. Rendering a video spends a paid generation.`,
+      },
+      {
+        question: 'What do the monthly plans include?',
+        answer: `Starter is ${PRICE_STARTER} and includes ${STARTER_QUOTA} generations each month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} and includes ${PRO_QUOTA} generations each month, 4K, transparent background export, and a priority queue.`,
+      },
+      {
+        question: 'Are these monthly plans?',
+        answer: `Yes. Starter and Pro are monthly plans. ${PRODUCT_NAME} does not sell one-time credit packs.`,
+      },
+    ],
+  };
 }
 
 export function homePlanCopy(): { h3: string; paragraph: string }[] {

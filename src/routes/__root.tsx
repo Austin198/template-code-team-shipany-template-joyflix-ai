@@ -29,6 +29,7 @@ import {
   pickAppearance,
   THEME_COOKIE,
 } from '@/config/appearance';
+import { absoluteUrl, SITE_URL } from '@/config/seo-site';
 import { parseCookieConsent } from '@/lib/cookie-consent';
 import { getQueryClient } from '@/lib/query-client';
 import { m } from '@/paraglide/messages.js';
@@ -194,22 +195,16 @@ const getAnalyticsConfigs = createServerFn()
 export const Route = createRootRoute({
   loader: () => getAnalyticsConfigs(),
   head: ({ loaderData }) => {
-    // head() runs on the SSR server AND again on the client during hydration.
-    // On the client, app_url falls back to the localhost dev default when
-    // VITE_APP_URL wasn't inlined into the client bundle at build — which would
-    // emit a second, localhost set of hreflang links. Prefer the live origin
-    // on the client so it always matches; the server uses the configured URL.
-    const appUrl =
-      (typeof window !== 'undefined' && window.location?.origin) ||
-      envConfigs.app_url ||
-      '';
+    // Sharing tags always use the public apex, not the request host and not a
+    // legacy aniform.ai app URL. See SITE_URL in src/config/seo-site.ts.
+    const appUrl = SITE_URL;
     const appName = loaderData?.appName || envConfigs.app_name || 'App';
     const appDescription =
       loaderData?.appDescription ||
       envConfigs.app_description ||
       'AI Video, Image & Music Generation Studio';
 
-    const canonicalUrl = `${appUrl}/`;
+    const canonicalUrl = absoluteUrl('/');
     const structuredData = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -230,7 +225,7 @@ export const Route = createRootRoute({
           '@id': `${appUrl}/#organization`,
           name: appName,
           url: appUrl,
-          logo: `${appUrl}/logo.png`,
+          logo: absoluteUrl('/logo.png'),
           sameAs: [],
         },
       ],
@@ -266,12 +261,11 @@ export const Route = createRootRoute({
         { property: 'og:title', content: appName },
         { property: 'og:description', content: appDescription },
         { property: 'og:url', content: canonicalUrl },
-        { property: 'og:image', content: `${appUrl}/logo.png` },
+        { property: 'og:image', content: absoluteUrl('/logo.png') },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@joyflix_ai' },
         { name: 'twitter:title', content: appName },
         { name: 'twitter:description', content: appDescription },
-        { name: 'twitter:image', content: `${appUrl}/logo.png` },
+        { name: 'twitter:image', content: absoluteUrl('/logo.png') },
         { name: 'generator', content: 'ShipAny' },
       ],
       links: [

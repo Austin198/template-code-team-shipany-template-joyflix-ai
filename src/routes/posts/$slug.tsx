@@ -3,6 +3,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 
 import { Link } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
+import { absoluteUrl } from '@/config/seo-site';
 import { m } from '@/paraglide/messages.js';
 import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
@@ -23,16 +24,12 @@ export const Route = createFileRoute('/posts/$slug')({
   head: ({ loaderData, params }) => {
     const post = (loaderData as { post?: BlogPost } | undefined)?.post;
     const appName = envConfigs.app_name || 'App';
-    const appUrl =
-      (typeof window !== 'undefined' && window.location?.origin) ||
-      envConfigs.app_url ||
-      'http://localhost:3000';
     if (!post) {
       return {
         meta: [{ title: `Post Not Found - ${appName}` }],
       };
     }
-    const pageUrl = `${appUrl}/posts/${params.slug}`;
+    const pageUrl = absoluteUrl(`/posts/${params.slug}`);
     const articleJsonLd = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -49,7 +46,7 @@ export const Route = createFileRoute('/posts/$slug')({
         name: appName,
         logo: {
           '@type': 'ImageObject',
-          url: `${appUrl}/logo.png`,
+          url: absoluteUrl('/logo.png'),
         },
       },
       mainEntityOfPage: {

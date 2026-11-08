@@ -2,6 +2,7 @@ import handler from '@tanstack/react-start/server-entry';
 
 import { envConfigs } from './config';
 import { seoPathRedirect } from './config/seo-landings';
+import { requestApexRedirect } from './config/seo-site';
 import { runWithDbScope } from './core/db/request-scope';
 import {
   getCookieFromHeader,
@@ -109,6 +110,29 @@ export default {
   },
 };
 
+/**
+ * www.aniform.online → https://aniform.online, same path and query.
+ *
+ * Both hostnames are custom domains on this Worker (live responses carry
+ * `X-Powered-By: ShipAny`). The redirect runs in the Worker before routing,
+ * so it does not depend on a Cloudflare dashboard Redirect Rule. GET and HEAD
+ * use 301. Other methods use 308 so the method and body are kept.
+ *
+ * Keep www attached to this Worker. If that hostname is removed, Cloudflare
+ * never invokes this handler and the redirect stops.
+ * Retired aniform.ai hosts are included: they 1016 today because DNS does not
+ * reach this Worker; if a request does arrive, it is sent to the apex too.
+ */
+function apexHostRedirect(req: Request): Response | null {
+  const location = requestApexRedirect(req);
+  if (!location) return null;
+  const status = req.method === 'GET' || req.method === 'HEAD' ? 301 : 308;
+  return new Response(null, {
+    status,
+    headers: { Location: location },
+  });
+}
+
 function seoCanonicalRedirect(req: Request): Response | null {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
   const url = new URL(req.url);
@@ -122,6 +146,12 @@ function seoCanonicalRedirect(req: Request): Response | null {
 }
 
 async function handleRequest(req: Request): Promise<Response> {
+  const apex = apexHostRedirect(req);
+  if (apex) {
+    const response = withPoweredBy(apex);
+    applySecurityHeaders(response);
+    return response;
+  }
   const canonical = seoCanonicalRedirect(req);
   if (canonical) {
     const response = withPoweredBy(canonical);

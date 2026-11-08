@@ -1,4 +1,4 @@
-import { PRODUCT_NAME } from './seo-site';
+import { canonicalSiteUrl, PRODUCT_NAME } from './seo-site';
 
 export const AUTH_SECRET_PLACEHOLDER =
   'shipany-dev-secret-change-in-production';
@@ -17,7 +17,8 @@ const publicEnv = (key: string) => metaEnv[key] ?? procEnv[key];
 
 export const envConfigs: Record<string, string> = {
   // App (public)
-  app_url: publicEnv('VITE_APP_URL') ?? 'http://localhost:3000',
+  app_url:
+    canonicalSiteUrl(publicEnv('VITE_APP_URL')) ?? 'http://localhost:3000',
   app_name: publicEnv('VITE_APP_NAME') ?? PRODUCT_NAME,
   app_description:
     publicEnv('VITE_APP_DESCRIPTION') ??
@@ -33,7 +34,8 @@ export const envConfigs: Record<string, string> = {
   db_max_connections: procEnv.DB_MAX_CONNECTIONS ?? '1',
 
   // Auth
-  auth_url: procEnv.AUTH_URL ?? publicEnv('VITE_APP_URL') ?? '',
+  auth_url:
+    canonicalSiteUrl(procEnv.AUTH_URL ?? publicEnv('VITE_APP_URL')) ?? '',
   auth_secret: procEnv.AUTH_SECRET ?? '',
   auth_cookie_prefix: procEnv.AUTH_COOKIE_PREFIX ?? '',
 

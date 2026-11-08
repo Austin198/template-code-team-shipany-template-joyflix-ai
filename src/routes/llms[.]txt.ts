@@ -1,12 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
 
 import { envConfigs } from '@/config';
+import { PRICING_DESCRIPTION, SITE_URL } from '@/config/seo-site';
 import { baseLocale } from '@/paraglide/runtime.js';
 import { getLocalPosts, mergePosts } from '@/content/posts';
 
 const STATIC_PAGES: { path: string; title: string; description: string }[] = [
   { path: '', title: 'Home', description: 'Landing page' },
-  { path: '/pricing', title: 'Pricing', description: 'Pricing plans' },
+  { path: '/pricing', title: 'Pricing', description: PRICING_DESCRIPTION },
   { path: '/blog', title: 'Blog', description: 'Blog posts and articles' },
 ];
 
@@ -14,7 +15,8 @@ export const Route = createFileRoute('/llms.txt')({
   server: {
     handlers: {
       GET: async () => {
-        const { app_url, app_name, app_description } = envConfigs;
+        const { app_name, app_description } = envConfigs;
+        const app_url = SITE_URL;
 
         let posts = getLocalPosts(baseLocale);
         try {
