@@ -27,6 +27,18 @@ export const HOME_TITLE =
 export const HOME_DESCRIPTION =
   'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4. There is no free generation quota, and no timeline skills are needed.';
 
+/** `/` owns this phrase. Other titles and H1s must not reuse it. */
+export const HOME_KEYWORD = 'AI Motion Graphics Generator';
+
+/**
+ * `/ai-video-generator` owns this phrase. The document title is the keyword,
+ * not the brand name alone. The description may still name the product.
+ */
+export const AI_VIDEO_GENERATOR_TITLE = 'AI Video Generator';
+export const AI_VIDEO_GENERATOR_H1 = 'AI Video Generator';
+export const AI_VIDEO_GENERATOR_DESCRIPTION =
+  'Aniform generates videos from text, an image, or another video. Text-to-video, image-to-video, and video-to-video.';
+
 export const PRICING_TITLE = `${PRODUCT_NAME} pricing`;
 export const PRICING_DESCRIPTION = `Monthly plans only. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} generations. Pro is ${PRICE_PRO} for ${PRO_QUOTA} generations. No free generation quota.`;
 
@@ -49,7 +61,7 @@ const STYLE_SLUGS = [
 ] as const;
 
 const SEO_SLUGS = [
-  'free-motion-graphics-generator',
+  // /free-motion-graphics-generator is retired (301 to /). Do not re-add it.
   'ai-motion-video-generator',
   'motion-graphics-editor',
   'how-to-use-magnific-move',

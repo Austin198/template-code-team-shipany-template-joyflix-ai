@@ -4,6 +4,7 @@ import React from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Sparkles } from 'lucide-react';
 
+import { aiVideoGeneratorSeoHead } from '@/lib/seo-document';
 import { m } from '@/paraglide/messages.js';
 import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
@@ -57,6 +58,7 @@ function AIVideoGeneratorPage() {
 }
 
 export const Route = createFileRoute('/ai-video-generator')({
+  head: () => aiVideoGeneratorSeoHead(),
   validateSearch: (
     search: Record<string, unknown>
   ): {

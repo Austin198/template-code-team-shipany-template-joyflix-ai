@@ -1,7 +1,10 @@
 import handler from '@tanstack/react-start/server-entry';
 
 import { envConfigs } from './config';
-import { seoPathRedirect } from './config/seo-landings';
+import {
+  SEO_PATH_REDIRECT_STATUS,
+  seoPathRedirect,
+} from './config/seo-landings';
 import { requestApexRedirect } from './config/seo-site';
 import { runWithDbScope } from './core/db/request-scope';
 import {
@@ -133,6 +136,12 @@ function apexHostRedirect(req: Request): Response | null {
   });
 }
 
+/**
+ * 301 trailing slashes, queries, /zh copies, and retired landings onto the
+ * canonical path. `/free-motion-graphics-generator` goes to `/`.
+ * Host redirects run first, so www has already been sent to the apex with
+ * the same path. Same 301 shape as `apexHostRedirect`.
+ */
 function seoCanonicalRedirect(req: Request): Response | null {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
   const url = new URL(req.url);
@@ -140,7 +149,7 @@ function seoCanonicalRedirect(req: Request): Response | null {
   if (!path) return null;
   const destination = new URL(path, url.origin);
   return new Response(null, {
-    status: 301,
+    status: SEO_PATH_REDIRECT_STATUS,
     headers: { Location: destination.toString() },
   });
 }
