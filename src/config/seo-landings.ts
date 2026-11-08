@@ -1,5 +1,6 @@
 import {
   FREE_QUOTA,
+  HOME_KEYWORD,
   isSeoSlug,
   isStyleSlug,
   PRICE_PRO,
@@ -332,49 +333,6 @@ export const STYLE_PAGES: readonly SeoPage[] = [
 export const SEO_SLUG_PAGES: readonly SeoPage[] = [
   {
     kind: 'slug',
-    slug: 'free-motion-graphics-generator',
-    path: '/free-motion-graphics-generator',
-    title: 'AI Motion Graphics Generator – Edit Elements, No Timeline',
-    description: `Click an element to change text or style, with no timeline, then export MP4. ${PRODUCT_NAME} does not include a free generation quota. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} videos a month.`,
-    h1: 'Edit Elements, No Timeline',
-    keyword: 'Edit elements, no timeline',
-    sections: [
-      {
-        h2: 'Click the element. Skip the timeline.',
-        paragraphs: [
-          `${PRODUCT_NAME} builds a motion-graphics scene from a sentence, then lets you correct it by clicking. There is no timeline to learn, no layer stack to name, and no keyframe graph for a one-word fix. You point at the element that is wrong, change the text or the style, and export MP4. The first generation is a starting frame. The edit is how that frame becomes the file you can post.`,
-          'People reach this page looking for a way to make titles, shapes, and short scenes move without opening an editor built for specialists. The path here is describe, generate, click, export. Describe the words a viewer must read and the frame they should sit in. Generate when the sentence is the one you want on screen. Click the element that came back wrong. Export when the click has fixed it. Nothing in that path asks you to scrub a playhead or parent a null.',
-        ],
-        figure: figure(
-          '/seo/page-free.webp',
-          'clicking an element to edit text without a timeline'
-        ),
-      },
-      {
-        h2: 'What a click is allowed to change',
-        paragraphs: [
-          'A click can retype any on-screen text: a price, a name, a button label, a statistic. It can change color when two objects should not share a hue, or when the brand color was missed. It can move timing so a word arrives with the motion, or just before it, if the video will be watched without sound. The rest of the scene stays where the generation put it. You are correcting a result, not rebuilding a composition from empty tracks.',
-          'Use the click for content that changed after you saw it move. Offers, names, and labels do that constantly. Do not expect the same click to invent a new scene, a new set of objects, or a different aspect ratio. Those are new generations. Mixing them up is how a month of renders disappears on variants that should have been one word. If the layout is acceptable and the line is not, edit. If the layout is the problem, generate again and then edit the new frame.',
-        ],
-      },
-      {
-        h2: 'Paid plans, with no free generation quota',
-        paragraphs: [
-          `${PRODUCT_NAME} does not include a free generation quota. ${FREE_QUOTA === 0 ? 'There is no complimentary render pack and no unpaid sample tier that later asks you to subscribe.' : `${FREE_QUOTA} generations are included before you pay.`} You can type a prompt on the homepage before you create an account. That field does not render a video by itself, and it is not a free trial. A render spends a generation on a paid plan. If a sentence anywhere on this site disagrees with that, the pricing section is the one to trust: Starter and Pro only.`,
-          `Starter is ${PRICE_STARTER}. It includes ${STARTER_QUOTA} generations each month, 1080p export, no watermark, and a commercial license. That is the entry plan. It fits a steady pace of social cuts, intros, and small explainers when you write the prompt carefully and edit elements instead of re-rolling the whole scene. Pro is ${PRICE_PRO}. It includes ${PRO_QUOTA} generations each month, 4K export, transparent background export, and a priority queue. Choose Pro when the file has to be larger, when the background must drop out for another editor, or when several people are waiting on renders. Neither plan starts with a temporary unpaid quota.`,
-        ],
-      },
-      {
-        h2: 'A short editing pass',
-        paragraphs: [
-          'Play the scene once with the sound off and read every word. Click the first word that is wrong and replace it before you touch color. Then change the element whose color fights the text. Then watch the timing: if the important word arrives while something else is still entering, delay that other element or advance the word. Export MP4 after that pass, not after an hour of ornamental tweaks. The software will put the characters you typed on the element you clicked. It will not check your price against a spreadsheet.',
-          `Write three prompts you would actually ship: one offer, one name card, one number. If you would not pay ${PRICE_STARTER} to produce that set across a month of revisions, you do not need a subscription yet. If you would, Starter is the honest starting point, with ${STARTER_QUOTA} generations and a commercial license. Six finished videos with two copy fixes each, done by clicking elements, can fit inside those ${STARTER_QUOTA} generations if you do not re-prompt for every comma. A team that generates a new scene for every spelling change will not. The homepage walks through describe, click, and export with the same plans. Come back here when you want the edit itself: point at the element, change the text or the style, leave with an MP4, and skip the timeline.`,
-        ],
-      },
-    ],
-  },
-  {
-    kind: 'slug',
     slug: 'ai-motion-video-generator',
     path: '/ai-motion-video-generator',
     title: 'AI Motion Video Generator – Prompt to MP4 Video',
@@ -643,6 +601,30 @@ export function seoSitemapPaths(): string[] {
   return [...seoIndexablePaths(), ...SITEMAP_EXTRA_PATHS];
 }
 
+/**
+ * Former landings. They are not rendered and not in the sitemap.
+ * `src/server.ts` turns the returned path into a 301, same as the www→apex
+ * host redirect. `/free-motion-graphics-generator` used the homepage keyword,
+ * so it now points at `/`.
+ */
+const RETIRED_SEO_PATHS: Readonly<Record<string, string>> = {
+  '/free-motion-graphics-generator': '/',
+};
+
+/** GET/HEAD status used by the server canonical redirect. */
+export const SEO_PATH_REDIRECT_STATUS = 301;
+
+function normalizePathname(pathname: string): string {
+  const trimmed = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  return trimmed === '' ? '/' : trimmed;
+}
+
+/** 301 target for a retired slug or path, or null when the URL is still live. */
+export function retiredSeoTarget(slugOrPath: string): string | null {
+  const raw = slugOrPath.startsWith('/') ? slugOrPath : `/${slugOrPath}`;
+  return RETIRED_SEO_PATHS[normalizePathname(raw)] ?? null;
+}
+
 /** Same-origin path to 301 to, or null when the request is already canonical. */
 export function seoPathRedirect(url: URL): string | null {
   const indexable = new Set(seoIndexablePaths());
@@ -651,9 +633,8 @@ export function seoPathRedirect(url: URL): string | null {
 
   if (pathname === '/zh' || pathname.startsWith('/zh/')) {
     const rest = pathname === '/zh' ? '/' : pathname.slice(3) || '/';
-    const candidate = rest.length > 1 ? rest.replace(/\/+$/, '') : rest;
-    const normalized = candidate === '' ? '/' : candidate;
-    if (indexable.has(normalized)) {
+    const normalized = normalizePathname(rest);
+    if (indexable.has(normalized) || retiredSeoTarget(normalized)) {
       pathname = rest;
       strippedLocale = true;
     }
@@ -661,13 +642,15 @@ export function seoPathRedirect(url: URL): string | null {
 
   const trimmed = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
   const path = trimmed === '' ? '/' : trimmed;
+  const retired = retiredSeoTarget(path);
+  if (retired) return retired;
   if (!indexable.has(path)) return null;
   const dirty = strippedLocale || trimmed !== pathname || url.search.length > 0;
   if (!dirty) return null;
   return path;
 }
 
-export const HOME_H1 = 'AI Motion Graphics Generator';
+export const HOME_H1 = HOME_KEYWORD;
 
 export const HOME_WHAT_IS = {
   h2: 'What is an AI motion graphics generator?',
@@ -832,12 +815,12 @@ export function homeFaq(): FaqItem[] {
       question: 'Is there a free AI motion graphics generator?',
       answer: [
         [
-          `${freeNote} There is no complimentary render pack. Starter is ${PRICE_STARTER} with ${STARTER_QUOTA} generations a month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} with ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. You can type a prompt on this page before you sign in. Rendering a video spends a paid generation. The page `,
+          `${freeNote} There is no complimentary render pack. Starter is ${PRICE_STARTER} with ${STARTER_QUOTA} generations a month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} with ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. You can type a prompt on this page before you sign in. Rendering a video spends a paid generation. The `,
           {
-            href: '/free-motion-graphics-generator',
-            anchor: 'Edit Elements, No Timeline',
+            href: '/motion-graphics-editor',
+            anchor: 'Motion Graphics Editor',
           },
-          ' states the same limit, and how to change text or style without a timeline.',
+          ' is where you change text or style without a timeline.',
         ],
       ],
     },

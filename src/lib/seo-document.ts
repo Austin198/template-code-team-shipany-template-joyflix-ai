@@ -6,6 +6,8 @@ import {
 } from '@/config/seo-landings';
 import {
   absoluteUrl,
+  AI_VIDEO_GENERATOR_DESCRIPTION,
+  AI_VIDEO_GENERATOR_TITLE,
   HOME_DESCRIPTION,
   HOME_TITLE,
   PRICE_PRO,
@@ -99,6 +101,20 @@ export function homeSeoHead() {
         ],
       }),
     ],
+  };
+}
+
+export function aiVideoGeneratorSeoHead() {
+  const url = absoluteUrl('/ai-video-generator');
+  const image = absoluteUrl('/logo.png');
+  return {
+    meta: socialMeta(
+      AI_VIDEO_GENERATOR_TITLE,
+      AI_VIDEO_GENERATOR_DESCRIPTION,
+      url,
+      image
+    ),
+    links: [{ rel: 'canonical', href: url }],
   };
 }
 
