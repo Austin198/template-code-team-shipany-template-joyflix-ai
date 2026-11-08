@@ -20,10 +20,12 @@ import {
 import { QuickAuthModal } from '@/components/sites/creation/QuickAuthModal';
 import {
   calculateCredits,
+  DEFAULT_VIDEO_MODEL_ID,
   getModelMaxImages,
   getModelSupportedDurations,
   getModelSupportedResolutions,
   getVideoModelsList,
+  preferredOption,
   supportsModelAspectRatio,
 } from '@/components/sites/shared/models';
 import { ModelSelect } from '@/components/sites/shared/ModelSelect';
@@ -55,8 +57,9 @@ export function HeroInput() {
   }, [publicConfig?.active_ai_provider]);
 
   const [prompt, setPrompt] = useState('');
-  const [selectedModelId, setSelectedModelId] =
-    useState<string>('seedance-2-5');
+  const [selectedModelId, setSelectedModelId] = useState<string>(
+    DEFAULT_VIDEO_MODEL_ID
+  );
 
   useEffect(() => {
     if (
@@ -181,7 +184,11 @@ export function HeroInput() {
       modelId,
       publicConfig?.active_ai_provider
     );
-    const nextResolution = nextResolutions[0] || resolution;
+    const nextResolution = preferredOption(
+      nextResolutions,
+      activeModels.find((item) => item.id === modelId)?.defaultResolution,
+      resolution
+    );
     const nextDurations = getModelSupportedDurations(
       modelId,
       publicConfig?.active_ai_provider,
@@ -189,7 +196,14 @@ export function HeroInput() {
     );
     setSelectedModelId(modelId);
     setResolution(nextResolution);
-    setDuration(nextDurations[0] || duration);
+    setDuration(
+      preferredOption(
+        nextDurations,
+        activeModels.find((item) => item.id === modelId)?.defaultDuration ||
+          '5s',
+        duration
+      )
+    );
 
     const newConfig = activeModels.find((m) => m.id === modelId);
     const newMax = getModelMaxImages(modelId, 'video');
@@ -571,6 +585,9 @@ export function HeroInput() {
               )}
             </div>
           </div>
+          <p className="text-muted-foreground px-1 text-xs leading-5">
+            {m['app.generator.credit_rule']()}
+          </p>
         </div>
       </div>
 

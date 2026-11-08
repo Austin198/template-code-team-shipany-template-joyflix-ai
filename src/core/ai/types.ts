@@ -352,6 +352,7 @@ export function normalizeAIModel(
     'minimax-h3': 'MiniMax-H3',
     'wan-3-0': 'wan3.0-video',
     'wan-2-7': 'wan2.7',
+    'seedance-1-0-lite': 'seedance-1.0-lite',
     'seedance-2-5': 'seedance-2.5',
     'doubao-seedance-2-0': 'seedance-2.0',
     'kling-3-0-turbo': 'kling-3.0-turbo',

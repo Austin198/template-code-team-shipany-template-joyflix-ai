@@ -46,6 +46,24 @@ exports, permission codes, and behavior that changes for end users.
 
 ---
 
+## 2026-11-08: Aniform video units and monthly quotas
+
+New checkouts of `starter_monthly` and `pro_monthly` grant 40 and 100
+credits at $19 and $49. One video credit is a 5-second 720P generation.
+10 seconds multiplies by 2, 1080P multiplies by 2, and an image does not
+add a credit. Renewals keep granting `subscription.creditsAmount`, so
+subscribers who already paid keep the allotment stored on that row.
+
+### Action required
+
+- [ ] **Stripe prices**: if live Prices were created at the old catalog
+      amounts, create new Prices for $19 and $49 and point new checkouts
+      at them. Do not edit existing subscription rows to shrink a current
+      period.
+- [ ] **Default video model**: the generator now starts on Seedance 1.0
+      Lite (`bytedance/v1-lite-text-to-video` on Kie). Confirm the Kie key
+      can call that model. No new env var.
+
 ## 2026-10-17: Guest posts (off by default)
 
 Outside authors can submit paid articles: they write at

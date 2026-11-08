@@ -14,7 +14,7 @@ export const FEATURE_MODEL_DETAILS: Partial<
   'ai-image': [
     {
       name: 'Nano Banana Pro',
-      badge: 'Pro 4K',
+      badge: 'Pro',
       description:
         'Crisp micro-textures, photorealistic skin and reflections with fine typography control.',
       credits: '12 Credits / Image',

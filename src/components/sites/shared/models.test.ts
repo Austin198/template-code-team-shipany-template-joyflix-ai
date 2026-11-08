@@ -20,18 +20,55 @@ describe('KIE MiniMax H3 resolution', () => {
     );
   });
 
-  it('bills 2K above the 768P base tier', () => {
+  it('bills 2K as the higher resolution unit', () => {
     expect(
       calculateCredits('minimax-h3', 'video', {
         resolution: '768P',
         duration: '5s',
       })
-    ).toBe(30);
+    ).toBe(1);
     expect(
       calculateCredits('minimax-h3', 'video', {
         resolution: '2K',
         duration: '5s',
       })
-    ).toBe(51);
+    ).toBe(2);
+  });
+});
+
+describe('video generation units', () => {
+  it('charges 5s 720P as 1, and stacks duration with 1080P', () => {
+    expect(
+      calculateCredits('seedance-1-0-lite', 'video', {
+        duration: '5s',
+        resolution: '720P',
+      })
+    ).toBe(1);
+    expect(
+      calculateCredits('seedance-1-0-lite', 'video', {
+        duration: '10s',
+        resolution: '720P',
+      })
+    ).toBe(2);
+    expect(
+      calculateCredits('seedance-1-0-lite', 'video', {
+        duration: '5s',
+        resolution: '1080P',
+      })
+    ).toBe(2);
+    expect(
+      calculateCredits('seedance-1-0-lite', 'video', {
+        duration: '10s',
+        resolution: '1080P',
+        hasImageInput: true,
+      })
+    ).toBe(4);
+    expect(
+      calculateCredits('seedance-2-5', 'video', {
+        duration: '10s',
+        resolution: '1080P',
+        hasImageInput: true,
+      })
+    ).toBe(4);
   });
 });
