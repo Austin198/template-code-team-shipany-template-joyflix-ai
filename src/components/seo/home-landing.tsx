@@ -84,6 +84,20 @@ export function HomeLanding() {
               Motion graphics styles
             </h2>
             <p className="mt-4 text-base leading-7">{HOME_STYLES_INTRO}</p>
+            <nav aria-label="Scenarios" className="mt-6">
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 text-base">
+                {STYLE_PAGES.map((page) => (
+                  <li key={page.slug}>
+                    <Link
+                      href={page.path}
+                      className="underline underline-offset-4"
+                    >
+                      {page.navLabel ?? page.keyword}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
             <div className="mt-8 flex flex-col gap-10">
               {STYLE_PAGES.map((page) => (
                 <div key={page.slug}>
