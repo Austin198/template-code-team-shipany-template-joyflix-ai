@@ -44,19 +44,18 @@ const FAQ_QUESTIONS = [
 ];
 
 describe('seo landings', () => {
-  it('publishes exactly 13 sitemap urls from the page data', () => {
+  it('publishes the landing urls plus pricing and the generator', () => {
     const paths = seoSitemapPaths();
-    expect(paths).toHaveLength(13);
-    expect(new Set(paths).size).toBe(13);
-    expect(paths[0]).toBe('/');
-    expect(
-      STYLE_PAGES.map((page) => page.path).every((path) => paths.includes(path))
-    ).toBe(true);
-    expect(
-      SEO_SLUG_PAGES.map((page) => page.path).every((path) =>
-        paths.includes(path)
-      )
-    ).toBe(true);
+    const landings = [
+      '/',
+      ...STYLE_PAGES.map((page) => page.path),
+      ...SEO_SLUG_PAGES.map((page) => page.path),
+    ];
+    expect(paths).toEqual([...landings, '/pricing', '/ai-video-generator']);
+    expect(paths).toHaveLength(15);
+    expect(new Set(paths).size).toBe(15);
+    expect(paths).not.toContain('/prompts');
+    expect(paths).not.toContain('/showcases');
   });
 
   it('keeps the free generation quota at zero', () => {
@@ -176,6 +175,11 @@ describe('seo landings', () => {
       seoPathRedirect(new URL(`${SITE_URL}/zh/motion-graphics-editor/`))
     ).toBe('/motion-graphics-editor');
     expect(seoPathRedirect(new URL(`${SITE_URL}/pricing?plan=pro`))).toBeNull();
+    expect(
+      seoPathRedirect(
+        new URL(`${SITE_URL}/ai-video-generator?prompt=hello&model=x`)
+      )
+    ).toBeNull();
     expect(seoPathRedirect(new URL(`${SITE_URL}/motion-graphics`))).toBeNull();
     expect(seoPathRedirect(new URL(`${SITE_URL}/not-a-page`))).toBeNull();
   });
@@ -183,8 +187,10 @@ describe('seo landings', () => {
   it('publishes every sitemap loc on the apex', () => {
     expect(SITE_URL).toBe('https://aniform.online');
     const locs = seoSitemapPaths().map((path) => absoluteUrl(path));
-    expect(locs).toHaveLength(13);
+    expect(locs).toHaveLength(15);
     expect(locs[0]).toBe('https://aniform.online');
+    expect(locs).toContain('https://aniform.online/pricing');
+    expect(locs).toContain('https://aniform.online/ai-video-generator');
     expect(absoluteUrl('/sitemap.xml')).toBe(
       'https://aniform.online/sitemap.xml'
     );
@@ -227,6 +233,31 @@ describe('seo landings', () => {
     expect(
       requestApexRedirect(new Request('https://aniform.online/pricing'))
     ).toBeNull();
+  });
+
+  it('sells click-to-edit on the free-generator url without a free hook', () => {
+    const page = SEO_SLUG_PAGES.find(
+      (item) => item.slug === 'free-motion-graphics-generator'
+    );
+    expect(page?.path).toBe('/free-motion-graphics-generator');
+    expect(page?.title).toBe(
+      'AI Motion Graphics Generator – Edit Elements, No Timeline'
+    );
+    expect(page?.h1).toBe('Edit Elements, No Timeline');
+    expect(page?.description).toBe(
+      'Click an element to change text or style, with no timeline, then export MP4. Aniform does not include a free generation quota. Starter is $19/mo for 60 videos a month.'
+    );
+    const promise = `${page?.title} ${page?.h1}`.toLowerCase();
+    expect(promise).not.toContain('free');
+    expect(promise).not.toContain('credit card');
+    const body = collectPageText(page!).toLowerCase();
+    expect(body).toContain('no timeline');
+    expect(body).toContain('does not include a free generation quota');
+    expect(body).toContain('$19/mo');
+    expect(body).toContain('60');
+    expect(body).not.toContain('no credit card');
+    expect(body).not.toContain('free generations');
+    expect(body).not.toContain('free to try');
   });
 
   it('keeps pricing on the two monthly plans and off credit packs', () => {

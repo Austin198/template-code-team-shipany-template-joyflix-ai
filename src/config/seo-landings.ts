@@ -334,42 +334,41 @@ export const SEO_SLUG_PAGES: readonly SeoPage[] = [
     kind: 'slug',
     slug: 'free-motion-graphics-generator',
     path: '/free-motion-graphics-generator',
-    title: 'Free AI Motion Graphics Generator – No Credit Card',
-    description: `${PRODUCT_NAME} does not include a free generation quota. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} videos a month. Edit any element and export MP4.`,
-    h1: 'Free AI Motion Graphics Generator',
-    keyword: 'Free AI Motion Graphics Generator',
+    title: 'AI Motion Graphics Generator – Edit Elements, No Timeline',
+    description: `Click an element to change text or style, with no timeline, then export MP4. ${PRODUCT_NAME} does not include a free generation quota. Starter is ${PRICE_STARTER} for ${STARTER_QUOTA} videos a month.`,
+    h1: 'Edit Elements, No Timeline',
+    keyword: 'Edit elements, no timeline',
     sections: [
       {
-        h2: 'What this page will and will not promise',
+        h2: 'Click the element. Skip the timeline.',
         paragraphs: [
-          `People search for a free AI motion graphics generator because they want to see a moving scene before they pay. ${PRODUCT_NAME} does not offer that as a generation quota. ${FREE_QUOTA === 0 ? `Free generations included: none.` : `${FREE_QUOTA} free generations.`} You can type a prompt on the homepage before you create an account. That field does not render a video by itself, and it is not a free trial. A render spends a generation on a paid plan.`,
-          `There is no complimentary pack, no watermark-only test tier, and no card-free rendering allowance hiding under Starter. The title of this page matches the search. The product does not match a promise of free output. If a sentence on this site ever disagrees with that, the pricing section is the one to trust: Starter and Pro only.`,
+          `${PRODUCT_NAME} builds a motion-graphics scene from a sentence, then lets you correct it by clicking. There is no timeline to learn, no layer stack to name, and no keyframe graph for a one-word fix. You point at the element that is wrong, change the text or the style, and export MP4. The first generation is a starting frame. The edit is how that frame becomes the file you can post.`,
+          'People reach this page looking for a way to make titles, shapes, and short scenes move without opening an editor built for specialists. The path here is describe, generate, click, export. Describe the words a viewer must read and the frame they should sit in. Generate when the sentence is the one you want on screen. Click the element that came back wrong. Export when the click has fixed it. Nothing in that path asks you to scrub a playhead or parent a null.',
         ],
         figure: figure(
           '/seo/page-free.webp',
-          'paid plans with no free generation quota'
+          'clicking an element to edit text without a timeline'
         ),
       },
       {
-        h2: 'What you pay for instead',
+        h2: 'What a click is allowed to change',
         paragraphs: [
-          `Starter is ${PRICE_STARTER}. It includes ${STARTER_QUOTA} generations each month, 1080p export, no watermark, and a commercial license. That is the entry plan. It is enough for a steady pace of social cuts, intros, and small explainers if you write the prompt carefully and edit elements instead of re-rolling the whole scene.`,
-          `Pro is ${PRICE_PRO}. It includes ${PRO_QUOTA} generations each month, 4K export, transparent background export, and a priority queue. Choose it when the file has to be larger, when the background must drop out for an editor, or when several people are waiting on renders. Neither plan is free. Neither plan starts with a temporary unpaid quota that later expires.`,
+          'A click can retype any on-screen text: a price, a name, a button label, a statistic. It can change color when two objects should not share a hue, or when the brand color was missed. It can move timing so a word arrives with the motion, or just before it, if the video will be watched without sound. The rest of the scene stays where the generation put it. You are correcting a result, not rebuilding a composition from empty tracks.',
+          'Use the click for content that changed after you saw it move. Offers, names, and labels do that constantly. Do not expect the same click to invent a new scene, a new set of objects, or a different aspect ratio. Those are new generations. Mixing them up is how a month of renders disappears on variants that should have been one word. If the layout is acceptable and the line is not, edit. If the layout is the problem, generate again and then edit the new frame.',
         ],
       },
       {
-        h2: 'How a generation is actually used',
+        h2: 'Paid plans, with no free generation quota',
         paragraphs: [
-          'Describe the scene in a sentence: the words on screen, the mood, and the frame. Generate when you are willing to spend one generation from the plan you bought. Then click an element to retype text, change a color, or move a beat. Those edits are how you avoid spending another generation on a spelling fix. Export MP4 when the frame is right.',
-          'If you are comparing tools that advertise a free button, read their current terms yourself. This site does not score other products on a free plan. The comparison on the homepage leaves those cells blank on purpose. A blank is not a claim that they lack a free tier or that they have one.',
+          `${PRODUCT_NAME} does not include a free generation quota. ${FREE_QUOTA === 0 ? 'There is no complimentary render pack and no unpaid sample tier that later asks you to subscribe.' : `${FREE_QUOTA} generations are included before you pay.`} You can type a prompt on the homepage before you create an account. That field does not render a video by itself, and it is not a free trial. A render spends a generation on a paid plan. If a sentence anywhere on this site disagrees with that, the pricing section is the one to trust: Starter and Pro only.`,
+          `Starter is ${PRICE_STARTER}. It includes ${STARTER_QUOTA} generations each month, 1080p export, no watermark, and a commercial license. That is the entry plan. It fits a steady pace of social cuts, intros, and small explainers when you write the prompt carefully and edit elements instead of re-rolling the whole scene. Pro is ${PRICE_PRO}. It includes ${PRO_QUOTA} generations each month, 4K export, transparent background export, and a priority queue. Choose Pro when the file has to be larger, when the background must drop out for another editor, or when several people are waiting on renders. Neither plan starts with a temporary unpaid quota.`,
         ],
       },
       {
-        h2: 'A practical way to decide',
+        h2: 'A short editing pass',
         paragraphs: [
-          `Write three prompts you would actually ship: one offer, one name card, one number. If you would not pay ${PRICE_STARTER} to produce that set across a month of revisions, you do not need a subscription yet. If you would, Starter is the honest starting point, with ${STARTER_QUOTA} generations and a commercial license rather than a watermarked sample.`,
-          `Sign in when you are ready to render. Until then, use the prompt field to get the sentence right. The homepage explains the full path, from the description through element edits to the MP4, and it is the page to return to when you want the product rather than the pricing caveat.`,
-          `Count a month before you subscribe. Six finished videos with two copy fixes each, done by clicking elements, can fit inside ${STARTER_QUOTA} generations if you do not re-roll every spelling change. A team that re-prompts for every comma will not. Write the three sentences, decide which plan matches that pace, and ignore any banner that offers a free render ${PRODUCT_NAME} does not sell. The commercial license on Starter is already the permission to publish. You do not need a separate unpaid sample to find out whether the sentence is clear. If the sentence is still muddy, fix the sentence before you pay for motion. A render will not invent the offer, the price, or the name you have not written down. Clarity is still your job, and the paid plan only moves a sentence that is already decided.`,
+          'Play the scene once with the sound off and read every word. Click the first word that is wrong and replace it before you touch color. Then change the element whose color fights the text. Then watch the timing: if the important word arrives while something else is still entering, delay that other element or advance the word. Export MP4 after that pass, not after an hour of ornamental tweaks. The software will put the characters you typed on the element you clicked. It will not check your price against a spreadsheet.',
+          `Write three prompts you would actually ship: one offer, one name card, one number. If you would not pay ${PRICE_STARTER} to produce that set across a month of revisions, you do not need a subscription yet. If you would, Starter is the honest starting point, with ${STARTER_QUOTA} generations and a commercial license. Six finished videos with two copy fixes each, done by clicking elements, can fit inside those ${STARTER_QUOTA} generations if you do not re-prompt for every comma. A team that generates a new scene for every spelling change will not. The homepage walks through describe, click, and export with the same plans. Come back here when you want the edit itself: point at the element, change the text or the style, leave with an MP4, and skip the timeline.`,
         ],
       },
     ],
@@ -620,7 +619,19 @@ export function pageBySlug(
   return seoBySlug.get(slug) ?? styleBySlug.get(slug);
 }
 
-export function seoSitemapPaths(): string[] {
+/**
+ * Public URLs that belong in the sitemap but must not join the canonical
+ * redirect set. `/pricing` and `/ai-video-generator` accept query state
+ * (`plan`, `prompt`, `model`, `startImageUrl`). Stripping that query would
+ * drop a checkout or a generator handoff.
+ *
+ * `/prompts` and `/showcases` stay out of both lists. They are public
+ * gallery shells — a heading plus a grid loaded from the API — not
+ * indexable marketing pages.
+ */
+const SITEMAP_EXTRA_PATHS = ['/pricing', '/ai-video-generator'] as const;
+
+function seoIndexablePaths(): string[] {
   return [
     '/',
     ...STYLE_PAGES.map((page) => page.path),
@@ -628,9 +639,13 @@ export function seoSitemapPaths(): string[] {
   ];
 }
 
+export function seoSitemapPaths(): string[] {
+  return [...seoIndexablePaths(), ...SITEMAP_EXTRA_PATHS];
+}
+
 /** Same-origin path to 301 to, or null when the request is already canonical. */
 export function seoPathRedirect(url: URL): string | null {
-  const indexable = new Set(seoSitemapPaths());
+  const indexable = new Set(seoIndexablePaths());
   let pathname = url.pathname;
   let strippedLocale = false;
 
@@ -820,9 +835,9 @@ export function homeFaq(): FaqItem[] {
           `${freeNote} There is no complimentary render pack. Starter is ${PRICE_STARTER} with ${STARTER_QUOTA} generations a month, 1080p, no watermark, and a commercial license. Pro is ${PRICE_PRO} with ${PRO_QUOTA} generations, 4K, transparent background export, and a priority queue. You can type a prompt on this page before you sign in. Rendering a video spends a paid generation. The page `,
           {
             href: '/free-motion-graphics-generator',
-            anchor: 'Free AI Motion Graphics Generator',
+            anchor: 'Edit Elements, No Timeline',
           },
-          ' states the same limit at more length.',
+          ' states the same limit, and how to change text or style without a timeline.',
         ],
       ],
     },
