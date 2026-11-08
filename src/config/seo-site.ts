@@ -25,7 +25,7 @@ export const PRO_QUOTA = 200;
 export const HOME_TITLE =
   'AI Motion Graphics Generator – Type a Prompt, Get a Video';
 export const HOME_DESCRIPTION =
-  'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4. There is no free generation quota, and no timeline skills are needed.';
+  'Type a sentence and get an editable motion graphics video. Click any on-screen text to fix the wording, then export MP4. Starter $19/mo, no free quota.';
 
 /** `/` owns this phrase. Other titles and H1s must not reuse it. */
 export const HOME_KEYWORD = 'AI Motion Graphics Generator';

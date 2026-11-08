@@ -120,12 +120,13 @@ describe('seo landings', () => {
       'AI Motion Graphics Generator – Type a Prompt, Get a Video'
     );
     expect(HOME_DESCRIPTION).toBe(
-      'Turn a sentence into animated motion graphics. Describe your scene, retype any on-screen text, change colors and timing, then export MP4. There is no free generation quota, and no timeline skills are needed.'
+      'Type a sentence and get an editable motion graphics video. Click any on-screen text to fix the wording, then export MP4. Starter $19/mo, no free quota.'
     );
+    expect(HOME_DESCRIPTION.length).toBeGreaterThanOrEqual(150);
+    expect(HOME_DESCRIPTION.length).toBeLessThanOrEqual(160);
     expect(HOME_DESCRIPTION.toLowerCase()).not.toContain('free to try');
-    expect(HOME_DESCRIPTION.toLowerCase()).toContain(
-      'no free generation quota'
-    );
+    expect(HOME_DESCRIPTION.toLowerCase()).not.toContain('free trial');
+    expect(HOME_DESCRIPTION.toLowerCase()).toContain('no free quota');
     expect(HOME_TITLE.toLowerCase()).not.toContain('magnific');
     expect(HOME_DESCRIPTION.toLowerCase()).not.toContain('magnific');
   });
