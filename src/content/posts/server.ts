@@ -1,8 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 
 import {
-  getLocalPosts,
-  loadLocalPost,
+  BLOG_POST_SLUGS,
   mergePosts,
   type BlogPost,
   type BlogPostDetail,
@@ -40,7 +39,8 @@ export const getBlogPostsFn = createServerFn()
   .inputValidator((data: { locale: string; limit?: number }) => data)
   .handler(async ({ data }) => {
     const dbPosts = await getDbPosts();
-    return mergePosts(dbPosts, getLocalPosts(data.locale), {
+    // Local MDX posts are template articles (ShipAny). They are not listed.
+    return mergePosts(dbPosts, [], {
       limit: data.limit,
     });
   });
@@ -74,19 +74,17 @@ export const getBlogPostFn = createServerFn()
       // Database not configured/reachable — fall through to local posts.
     }
 
-    const mod = loadLocalPost(data.slug, data.locale);
-    if (!mod) return null;
-    const meta = mod.meta;
-    return {
-      slug: data.slug,
-      title: meta.title,
-      description: meta.description,
-      image: meta.image,
-      createdAt: new Date(meta.created_at).toISOString(),
-      authorName: meta.author_name,
-      authorImage: meta.author_image,
-      source: 'local',
-    };
+    if ((BLOG_POST_SLUGS as readonly string[]).includes(data.slug)) {
+      return {
+        slug: data.slug,
+        title: '',
+        description: '',
+        createdAt: new Date(0).toISOString(),
+        source: 'local',
+        withheld: true,
+      };
+    }
+    return null;
   });
 
 /** Whether the site accepts guest posts (the blog links to /guest-post). */

@@ -29,9 +29,15 @@ import {
   pickAppearance,
   THEME_COOKIE,
 } from '@/config/appearance';
-import { absoluteUrl, SITE_URL } from '@/config/seo-site';
+import { publicAppDescription, SITE_URL } from '@/config/seo-site';
 import { parseCookieConsent } from '@/lib/cookie-consent';
 import { getQueryClient } from '@/lib/query-client';
+import {
+  publicRobotsContent,
+  robotsMeta,
+  websiteStructuredData,
+  type PublicRobotsMatch,
+} from '@/lib/seo-document';
 import { m } from '@/paraglide/messages.js';
 import { useAppearance } from '@/hooks/use-appearance';
 import { useCookieConsent } from '@/hooks/use-cookie-consent';
@@ -145,10 +151,9 @@ const getAnalyticsConfigs = createServerFn()
           ? parseCookieConsent(getCookie('cookie_consent'))
           : null,
         appName: configs.app_name?.trim() || envConfigs.app_name,
-        appDescription:
-          configs.app_description?.trim() ||
-          envConfigs.app_description ||
-          'AI Video Generation Studio',
+        appDescription: publicAppDescription(
+          configs.app_description?.trim() || envConfigs.app_description
+        ),
         gaId: configs.google_analytics_id?.trim() || '',
         plausibleDomain: plausibleOff
           ? ''
@@ -178,9 +183,7 @@ const getAnalyticsConfigs = createServerFn()
         cookieConsentEnabled: false,
         cookieConsent: null,
         appName: envConfigs.app_name,
-        appDescription:
-          envConfigs.app_description ||
-          'AI Video, Image & Music Generation Studio',
+        appDescription: publicAppDescription(envConfigs.app_description),
         gaId: '',
         plausibleDomain: '',
         plausibleSrc: '',
@@ -192,44 +195,32 @@ const getAnalyticsConfigs = createServerFn()
     }
   });
 
+function robotsFor(
+  match: PublicRobotsMatch,
+  matches: readonly PublicRobotsMatch[]
+) {
+  // `matches` can be a stale copy from before a not-found flag is stored.
+  // The current match is read after that update.
+  return publicRobotsContent([match, ...matches]);
+}
+
 export const Route = createRootRoute({
   loader: () => getAnalyticsConfigs(),
-  head: ({ loaderData }) => {
+  headers: ({ matches, match }) => {
+    const robots = robotsFor(match, matches);
+    if (!robots.startsWith('noindex')) return {};
+    return { 'X-Robots-Tag': robots };
+  },
+  head: ({ loaderData, matches, match }) => {
     // Sharing tags always use the public apex, not the request host and not a
     // legacy aniform.ai app URL. See SITE_URL in src/config/seo-site.ts.
-    const appUrl = SITE_URL;
     const appName = loaderData?.appName || envConfigs.app_name || 'App';
-    const appDescription =
-      loaderData?.appDescription ||
-      envConfigs.app_description ||
-      'AI Video, Image & Music Generation Studio';
-
-    const canonicalUrl = absoluteUrl('/');
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@graph': [
-        {
-          '@type': 'WebSite',
-          '@id': `${appUrl}/#website`,
-          url: appUrl,
-          name: appName,
-          description: appDescription,
-          potentialAction: {
-            '@type': 'SearchAction',
-            target: `${appUrl}/workspace?q={search_term_string}`,
-            'query-input': 'required name=search_term_string',
-          },
-        },
-        {
-          '@type': 'Organization',
-          '@id': `${appUrl}/#organization`,
-          name: appName,
-          url: appUrl,
-          logo: absoluteUrl('/logo.png'),
-          sameAs: [],
-        },
-      ],
-    };
+    const appDescription = publicAppDescription(
+      loaderData?.appDescription || envConfigs.app_description
+    );
+    const robots = robotsFor(match, matches);
+    const notFound = robots === 'noindex, nofollow' && !!match.globalNotFound;
+    const documentTitle = notFound ? `Page not found | ${appName}` : appName;
 
     return {
       meta: [
@@ -239,34 +230,19 @@ export const Route = createRootRoute({
           content:
             'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
         },
-        { title: appName },
+        { title: documentTitle },
         { name: 'description', content: appDescription },
-        {
-          name: 'robots',
-          content:
-            'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-        },
-        {
-          name: 'googlebot',
-          content:
-            'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
-        },
-        {
-          name: 'bingbot',
-          content:
-            'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
-        },
+        ...robotsMeta(robots),
         { property: 'og:site_name', content: appName },
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: appName },
+        { property: 'og:title', content: documentTitle },
         { property: 'og:description', content: appDescription },
-        { property: 'og:url', content: canonicalUrl },
-        { property: 'og:image', content: absoluteUrl('/logo.png') },
+        { property: 'og:url', content: SITE_URL },
+        { property: 'og:image', content: `${SITE_URL}/logo.png` },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: appName },
+        { name: 'twitter:title', content: documentTitle },
         { name: 'twitter:description', content: appDescription },
-        { name: 'twitter:image', content: absoluteUrl('/logo.png') },
-        { name: 'generator', content: 'ShipAny' },
+        { name: 'twitter:image', content: `${SITE_URL}/logo.png` },
       ],
       links: [
         { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' },
@@ -276,7 +252,9 @@ export const Route = createRootRoute({
       scripts: [
         {
           type: 'application/ld+json',
-          children: JSON.stringify(structuredData),
+          children: JSON.stringify(
+            websiteStructuredData(appName, appDescription)
+          ).replace(/</g, '\\u003c'),
         },
       ],
     };

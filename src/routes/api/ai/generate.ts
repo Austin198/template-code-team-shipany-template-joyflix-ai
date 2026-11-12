@@ -358,8 +358,16 @@ async function POST({ request }: { request: Request }) {
     const balance = await getBalance(session.user.id);
     if (balance < costCredits) {
       await markReservedTaskFailed();
+      const unit =
+        mediaType === 'video'
+          ? costCredits === 1
+            ? 'generation'
+            : 'generations'
+          : costCredits === 1
+            ? 'credit'
+            : 'credits';
       return respErr(
-        `Insufficient credits (requires ${costCredits} credits, current balance: ${balance}). Please purchase credits to continue.`
+        `Not enough ${unit} for this request (uses ${costCredits}, current balance ${balance}).`
       );
     }
 
@@ -396,7 +404,11 @@ async function POST({ request }: { request: Request }) {
       } catch (error: any) {
         await markReservedTaskFailed();
         if (error?.message === 'Failed to deduct credits') {
-          return respErr('Failed to deduct credits, please try again.');
+          return respErr(
+            mediaType === 'video'
+              ? 'Failed to deduct generations, please try again.'
+              : 'Failed to deduct credits, please try again.'
+          );
         }
         throw error;
       }

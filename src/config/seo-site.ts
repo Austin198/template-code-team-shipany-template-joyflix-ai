@@ -35,6 +35,44 @@ export const HOME_TITLE =
 export const HOME_DESCRIPTION =
   'Type a sentence and get an editable motion graphics video. Click any on-screen text to fix the wording, then export MP4. Starter $19/mo, no free quota.';
 
+/**
+ * Sitewide default (root meta, JSON-LD, llms.txt). Not the homepage title.
+ * Homepage Title and H1 stay on HOME_TITLE / HOME_KEYWORD.
+ */
+export const SITE_DESCRIPTION =
+  'Aniform turns a prompt into an editable motion graphics video. Click on-screen text to fix the wording, then export MP4.';
+
+export const PROMPTS_TITLE = `${PRODUCT_NAME} Prompts`;
+export const PROMPTS_DESCRIPTION =
+  'Prompt references for Aniform motion graphics videos.';
+export const SHOWCASES_TITLE = `${PRODUCT_NAME} Showcases`;
+export const SHOWCASES_DESCRIPTION =
+  'Motion graphics videos made with Aniform.';
+
+const LEGACY_APP_DESCRIPTIONS = new Set([
+  'ai video, image & music generation studio',
+  'ai video generation studio',
+  'ship your saas faster',
+]);
+
+/**
+ * Public description. Stored or env values that are still the template
+ * studio line (or name Joyflix / ShipAny / Pixany) are replaced. A custom
+ * description that does not match those leftovers is kept.
+ */
+export function publicAppDescription(value: string | undefined | null): string {
+  const trimmed = value?.trim() ?? '';
+  const lower = trimmed.toLowerCase();
+  if (
+    !trimmed ||
+    LEGACY_APP_DESCRIPTIONS.has(lower) ||
+    /joyflix|shipany|pixany|stp\.ai/.test(lower)
+  ) {
+    return SITE_DESCRIPTION;
+  }
+  return trimmed;
+}
+
 /** `/` owns this phrase. Other titles and H1s must not reuse it. */
 export const HOME_KEYWORD = 'AI Motion Graphics Generator';
 

@@ -21,6 +21,108 @@ import {
   usdAmount,
 } from '@/config/seo-site';
 
+const INDEXABLE_ROBOTS =
+  'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+
+const THIN_SHELL_ROUTE_IDS = new Set([
+  '/prompts',
+  '/showcases',
+  '/posts',
+  '/posts/',
+  '/blog',
+  '/blog/',
+]);
+
+export type PublicRobotsMatch = {
+  routeId?: string;
+  status?: string;
+  globalNotFound?: boolean;
+  loaderData?: unknown;
+};
+
+function blogPostFromLoader(
+  loaderData: unknown
+): { withheld?: boolean; source?: string; preview?: boolean } | undefined {
+  if (!loaderData || typeof loaderData !== 'object') return undefined;
+  const post = (loaderData as { post?: unknown }).post;
+  if (!post || typeof post !== 'object') return undefined;
+  return post as { withheld?: boolean; source?: string; preview?: boolean };
+}
+
+/**
+ * One robots directive for the root document. Thin galleries and withdrawn
+ * template articles are noindex. A real guest post on /blog/$slug stays
+ * indexable. Not-found matches are noindex.
+ */
+export function publicRobotsContent(
+  matches: readonly PublicRobotsMatch[]
+): string {
+  for (const match of matches) {
+    if (match.status === 'notFound' || match.globalNotFound) {
+      return 'noindex, nofollow';
+    }
+    const id = match.routeId ?? '';
+    if (id === '/posts/$slug') return 'noindex, nofollow';
+    if (id === '/blog/$slug') {
+      const post = blogPostFromLoader(match.loaderData);
+      if (post?.withheld || post?.source === 'local' || post?.preview) {
+        return 'noindex, nofollow';
+      }
+    }
+    if (THIN_SHELL_ROUTE_IDS.has(id)) return 'noindex, follow';
+  }
+  return INDEXABLE_ROBOTS;
+}
+
+/** WebSite + Organization. No SearchAction: /workspace is not a route. */
+export function websiteStructuredData(name: string, description: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name,
+        description,
+      },
+      {
+        '@type': 'Organization',
+        '@id': `${SITE_URL}/#organization`,
+        name,
+        url: SITE_URL,
+        logo: absoluteUrl('/logo.png'),
+      },
+    ],
+  };
+}
+
+export function robotsMeta(robots: string) {
+  return [
+    { name: 'robots', content: robots },
+    { name: 'googlebot', content: robots },
+    { name: 'bingbot', content: robots },
+  ];
+}
+
+/** Title, description, Open Graph, a self canonical, and robots. */
+export function selfCanonicalHead(
+  path: string,
+  title: string,
+  description: string,
+  robots = 'noindex, follow'
+) {
+  const url = absoluteUrl(path);
+  const image = absoluteUrl('/logo.png');
+  return {
+    meta: [
+      ...socialMeta(title, description, url, image),
+      ...robotsMeta(robots),
+    ],
+    links: [{ rel: 'canonical', href: url }],
+  };
+}
+
 function jsonLd(data: unknown) {
   return {
     type: 'application/ld+json',

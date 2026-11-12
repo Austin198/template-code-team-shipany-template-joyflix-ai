@@ -10,6 +10,7 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 
+import { formatGenerationCount } from './generation-label';
 import { calculateCredits, ModelConfig } from './models';
 
 interface ModelSelectProps {
@@ -85,11 +86,17 @@ export function ModelSelect({
                 </div>
               </div>
               <span className="text-muted-foreground ml-auto shrink-0 pl-3 font-mono text-[11px]">
-                {calculateCredits(mItem.id, mItem.type, {
-                  duration,
-                  resolution,
-                })}{' '}
-                cr
+                {mItem.type === 'video'
+                  ? formatGenerationCount(
+                      calculateCredits(mItem.id, mItem.type, {
+                        duration,
+                        resolution,
+                      })
+                    )
+                  : `${calculateCredits(mItem.id, mItem.type, {
+                      duration,
+                      resolution,
+                    })} cr`}
               </span>
             </div>
           </SelectItem>

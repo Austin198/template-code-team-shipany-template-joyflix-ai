@@ -1,4 +1,8 @@
-import { canonicalSiteUrl, PRODUCT_NAME } from './seo-site';
+import {
+  canonicalSiteUrl,
+  PRODUCT_NAME,
+  publicAppDescription,
+} from './seo-site';
 
 export const AUTH_SECRET_PLACEHOLDER =
   'shipany-dev-secret-change-in-production';
@@ -20,9 +24,7 @@ export const envConfigs: Record<string, string> = {
   app_url:
     canonicalSiteUrl(publicEnv('VITE_APP_URL')) ?? 'http://localhost:3000',
   app_name: publicEnv('VITE_APP_NAME') ?? PRODUCT_NAME,
-  app_description:
-    publicEnv('VITE_APP_DESCRIPTION') ??
-    'AI Video, Image & Music Generation Studio',
+  app_description: publicAppDescription(publicEnv('VITE_APP_DESCRIPTION')),
   app_logo: publicEnv('VITE_APP_LOGO') ?? '/logo.png',
 
   // Database
