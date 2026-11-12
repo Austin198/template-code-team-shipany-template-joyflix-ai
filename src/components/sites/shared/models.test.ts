@@ -36,6 +36,38 @@ describe('KIE MiniMax H3 resolution', () => {
   });
 });
 
+describe('Seedance 1.0 Lite resolutions', () => {
+  it('does not offer 480P on the default model', () => {
+    expect(AI_MODELS['seedance-1-0-lite'].supportedResolutions).toEqual([
+      '720P',
+      '1080P',
+    ]);
+    expect(getModelSupportedResolutions('seedance-1-0-lite', 'kie')).toEqual([
+      '720P',
+      '1080P',
+    ]);
+    expect(getModelSupportedResolutions('seedance-1-0-lite')).toEqual([
+      '720P',
+      '1080P',
+    ]);
+  });
+
+  it('still counts a 480P string as the existing non-1080P unit', () => {
+    expect(
+      calculateCredits('seedance-1-0-lite', 'video', {
+        duration: '5s',
+        resolution: '480P',
+      })
+    ).toBe(1);
+    expect(
+      calculateCredits('seedance-1-0-lite', 'video', {
+        duration: '10s',
+        resolution: '1080P',
+      })
+    ).toBe(4);
+  });
+});
+
 describe('video generation units', () => {
   it('charges 5s 720P as 1, and stacks duration with 1080P', () => {
     expect(

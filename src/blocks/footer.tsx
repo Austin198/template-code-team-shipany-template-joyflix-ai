@@ -1,22 +1,8 @@
-import type { SVGProps } from 'react';
 import { getRouteApi } from '@tanstack/react-router';
-import { BookOpen, Mail } from 'lucide-react';
 
 import { openCookieSettings } from '@/lib/cookie-consent';
 import { m } from '@/paraglide/messages.js';
-import {
-  SiteFooter,
-  type FooterColumn,
-  type FooterSocial,
-} from '@/components/site-footer';
-
-function MailIcon(props: SVGProps<SVGSVGElement>) {
-  return <Mail {...(props as any)} />;
-}
-
-function BlogIcon(props: SVGProps<SVGSVGElement>) {
-  return <BookOpen {...(props as any)} />;
-}
+import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 
 const rootRoute = getRouteApi('__root__');
 
@@ -43,10 +29,7 @@ export function Footer() {
     },
     {
       title: m['landing.footer.resources'](),
-      links: [
-        { label: m['landing.footer.blog'](), href: '/posts' },
-        { label: m['landing.nav.pricing'](), href: '/pricing' },
-      ],
+      links: [{ label: m['landing.nav.pricing'](), href: '/pricing' }],
     },
     {
       title: m['landing.footer.legal'](),
@@ -65,16 +48,7 @@ export function Footer() {
     },
   ];
 
-  const socials: FooterSocial[] = [
-    { icon: BlogIcon, href: '/posts', label: m['landing.footer.blog']() },
-    { icon: MailIcon, href: 'mailto:support@stp.ai', label: 'Support' },
-  ];
-
   return (
-    <SiteFooter
-      tagline={m['landing.footer.tagline']()}
-      columns={columns}
-      socials={socials}
-    />
+    <SiteFooter tagline={m['landing.footer.tagline']()} columns={columns} />
   );
 }

@@ -101,7 +101,7 @@ async function GET({ request }: { request: Request }) {
           video: isVideo ? mediaUrl : undefined,
           audio: isMusic ? mediaUrl : undefined,
           prompt: t.prompt || '',
-          model: t.model || 'Pixany AI',
+          model: t.model || '',
           mediaType: t.mediaType,
         };
       })

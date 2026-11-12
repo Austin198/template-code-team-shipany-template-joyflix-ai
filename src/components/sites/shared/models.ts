@@ -101,11 +101,11 @@ export const AI_MODELS: Record<string, ModelConfig> = {
     supportsFirstLastFrame: true,
     maxImages: 2,
     supportedDurations: ['5s', '10s'],
-    supportedResolutions: ['720P', '1080P', '480P'],
+    supportedResolutions: ['720P', '1080P'],
     defaultResolution: '720P',
     defaultDuration: '5s',
     description:
-      'Seedance 1.0 Lite. Default is 720P, 5 seconds, 16:9. A 5-second 720P video is 1 credit.',
+      'Seedance 1.0 Lite. Default is 720P, 5 seconds, 16:9. A 5-second 720P video is 1 generation.',
   },
   'seedance-2-5': {
     id: 'seedance-2-5',
@@ -433,7 +433,7 @@ export function getModelSupportedResolutions(
   const model = AI_MODELS[modelId];
   if (!model) return EMPTY_STRING_ARRAY;
   if (provider === 'kie' && model.type === 'video') {
-    if (modelId === 'seedance-1-0-lite') return ['720P', '1080P', '480P'];
+    if (modelId === 'seedance-1-0-lite') return ['720P', '1080P'];
     if (modelId === 'wan-3-0') return ['480P', '720P', '1080P'];
     // KIE MiniMax H3 only accepts 768P / 2K (no 1080P tier)
     if (modelId === 'minimax-h3') return ['768P', '2K'];

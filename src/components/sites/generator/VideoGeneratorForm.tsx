@@ -8,6 +8,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages.js';
+import { formatGenerationCount } from '@/components/sites/shared/generation-label';
 import { ModelConfig } from '@/components/sites/shared/models';
 import { ModelSelect } from '@/components/sites/shared/ModelSelect';
 import { Button } from '@/components/ui/button';
@@ -263,7 +264,7 @@ export function VideoGeneratorForm({
                 className="h-8 min-w-0 flex-1 sm:h-9 sm:min-w-[160px]"
               />
               <span className="bg-primary/10 text-primary shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold">
-                {currentCredits} {m['app.generator.credits']()}
+                {formatGenerationCount(currentCredits)}
               </span>
             </div>
           </div>
@@ -403,8 +404,8 @@ export function VideoGeneratorForm({
             <>
               <Wand2 className="size-4 sm:size-5" />
               <span>
-                {m['app.generator.generate_video_btn']()} ({currentCredits}{' '}
-                {m['app.generator.credits']()})
+                {m['app.generator.generate_video_btn']()} (
+                {formatGenerationCount(currentCredits)})
               </span>
             </>
           )}

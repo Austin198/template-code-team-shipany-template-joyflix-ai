@@ -1,15 +1,12 @@
 import type { ComponentType } from 'react';
 
-import { baseLocale } from '@/paraglide/runtime.js';
-
 /**
- * Local blog posts written as MDX files in this directory.
- * File naming: `<slug>.<locale>.mdx` (falls back to the base locale).
- * Register every local post slug here — it drives loading and the sitemap.
+ * Local MDX filenames still sit in this directory, but they are template
+ * articles and are not loaded. `BLOG_POST_SLUGS` only marks those URLs so
+ * the blog route can withhold them. They are not in the sitemap.
  *
  * This module is isomorphic (safe in client bundles). Database posts are
- * fetched through the server functions in ./server.ts and merged with the
- * local posts via the pure helpers below.
+ * fetched through the server functions in ./server.ts.
  */
 export const BLOG_POST_SLUGS = [
   'what-is-shipany',
@@ -49,6 +46,11 @@ export type BlogPostDetail = BlogPost & {
   content?: string;
   /** An unpublished guest post shown to its author or a reviewer. */
   preview?: boolean;
+  /**
+   * A leftover template article. The public page must not render its body
+   * or title.
+   */
+  withheld?: boolean;
   /** Preview only: where the submission stands, for the banner's next step. */
   previewInfo?: {
     guestPostId: string;
@@ -63,43 +65,19 @@ export type BlogPostDetail = BlogPost & {
   };
 };
 
-// Eagerly bundle the local MDX posts (small markdown files), mirroring the
-// static-pages pattern. Keys are absolute from the project root.
-const postModules = import.meta.glob<PostModule>('/src/content/posts/*.mdx', {
-  eager: true,
-});
-
-export function loadLocalPost(slug: string, locale: string): PostModule | null {
-  if (!BLOG_POST_SLUGS.includes(slug as (typeof BLOG_POST_SLUGS)[number])) {
-    return null;
-  }
-  return (
-    postModules[`/src/content/posts/${slug}.${locale}.mdx`] ??
-    postModules[`/src/content/posts/${slug}.${baseLocale}.mdx`] ??
-    null
-  );
+/**
+ * Template MDX in this directory is not published. Returning null keeps the
+ * ShipAny article text out of the client bundle.
+ */
+export function loadLocalPost(
+  _slug: string,
+  _locale: string
+): PostModule | null {
+  return null;
 }
 
-function localPostToItem(slug: string, meta: BlogPostMeta): BlogPost {
-  return {
-    slug,
-    title: meta.title,
-    description: meta.description,
-    image: meta.image,
-    createdAt: new Date(meta.created_at).toISOString(),
-    authorName: meta.author_name,
-    authorImage: meta.author_image,
-    source: 'local',
-  };
-}
-
-export function getLocalPosts(locale: string): BlogPost[] {
-  return BLOG_POST_SLUGS.map((slug) => ({
-    slug: slug as string,
-    mod: loadLocalPost(slug, locale),
-  }))
-    .filter((m): m is { slug: string; mod: PostModule } => m.mod !== null)
-    .map(({ slug, mod }) => localPostToItem(slug, mod.meta));
+export function getLocalPosts(_locale: string): BlogPost[] {
+  return [];
 }
 
 /**

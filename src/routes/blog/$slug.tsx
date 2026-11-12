@@ -1,6 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { describeSubmitProblem } from '@/routes/settings/guest-posts/-shared';
-import { MDXProvider } from '@mdx-js/react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,7 +12,8 @@ import { toast } from 'sonner';
 
 import { Link, useRouter } from '@/core/i18n/navigation';
 import { envConfigs } from '@/config';
-import { SITE_URL } from '@/config/seo-site';
+import { absoluteUrl, PRODUCT_NAME, SITE_URL } from '@/config/seo-site';
+import { robotsMeta } from '@/lib/seo-document';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages.js';
 import { getLocale, localizeUrl } from '@/paraglide/runtime.js';
@@ -23,14 +23,9 @@ import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
 import { LazyImage } from '@/components/lazy';
 import { MarkdownContent } from '@/components/markdown-content';
-import { mdxComponents } from '@/components/mdx-components';
 import { PaymentProviderModal } from '@/components/payment-provider-modal';
 import { Button, buttonVariants } from '@/components/ui/button';
-import {
-  formatPostDate,
-  loadLocalPost,
-  type BlogPostDetail,
-} from '@/content/posts';
+import { formatPostDate, type BlogPostDetail } from '@/content/posts';
 import { getBlogPostFn, getBlogPreviewFn } from '@/content/posts/server';
 
 export const Route = createFileRoute('/blog/$slug')({
@@ -53,11 +48,27 @@ export const Route = createFileRoute('/blog/$slug')({
   head: ({ loaderData }) => {
     if (!loaderData) return {};
     const { locale, post } = loaderData;
+    if (post.withheld || post.source === 'local') {
+      const url = absoluteUrl(`/blog/${post.slug}`);
+      const title = `Article unavailable | ${PRODUCT_NAME}`;
+      const description = 'This page is not an Aniform article.';
+      return {
+        meta: [
+          { title },
+          { name: 'description', content: description },
+          ...robotsMeta('noindex, nofollow'),
+          { property: 'og:title', content: title },
+          { property: 'og:description', content: description },
+          { property: 'og:url', content: url },
+        ],
+        links: [{ rel: 'canonical', href: url }],
+      };
+    }
     if (post.preview) {
       return {
         meta: [
           { title: `${post.title} | ${envConfigs.app_name}` },
-          { name: 'robots', content: 'noindex, nofollow' },
+          ...robotsMeta('noindex, nofollow'),
         ],
       };
     }
@@ -205,10 +216,30 @@ function siteHost() {
 function BlogPostPage() {
   const { locale, post } = Route.useLoaderData();
 
-  // Local posts render their bundled MDX component; database posts render
-  // raw markdown through MarkdownContent.
-  const LocalContent =
-    post.source === 'local' ? loadLocalPost(post.slug, locale)?.default : null;
+  if (post.withheld || post.source === 'local') {
+    return (
+      <div className="bg-background text-foreground flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1 px-6 py-16">
+          <article className="mx-auto max-w-3xl">
+            <h1 className="text-foreground text-3xl font-semibold tracking-tight">
+              {m['content.withheld.title']()}
+            </h1>
+            <p className="text-muted-foreground mt-3">
+              {m['content.withheld.body']()}
+            </p>
+            <Link
+              href="/"
+              className="mt-6 inline-flex text-sm font-semibold underline underline-offset-4"
+            >
+              {m['common.not_found.back_home']()}
+            </Link>
+          </article>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background text-foreground flex min-h-screen flex-col">
@@ -275,25 +306,17 @@ function BlogPostPage() {
             />
           )}
 
-          {LocalContent ? (
-            <div className="text-foreground/90 text-[15px] leading-7">
-              <MDXProvider components={mdxComponents}>
-                <LocalContent />
-              </MDXProvider>
-            </div>
-          ) : (
-            <MarkdownContent
-              content={post.content || ''}
-              sponsored={post.sponsored}
-              // Guest posts: show the linked sites where their traffic
-              // came from (utm_source = this site).
-              utm={
-                post.sponsored
-                  ? { source: siteHost(), medium: 'guest_post' }
-                  : undefined
-              }
-            />
-          )}
+          <MarkdownContent
+            content={post.content || ''}
+            sponsored={post.sponsored}
+            // Guest posts: show the linked sites where their traffic
+            // came from (utm_source = this site).
+            utm={
+              post.sponsored
+                ? { source: siteHost(), medium: 'guest_post' }
+                : undefined
+            }
+          />
         </article>
       </main>
       <Footer />

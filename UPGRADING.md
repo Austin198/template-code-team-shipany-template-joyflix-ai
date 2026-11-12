@@ -46,6 +46,24 @@ exports, permission codes, and behavior that changes for end users.
 
 ---
 
+## 2026-11-12: Public Aniform copy (no template branding)
+
+Public HTML no longer includes `<meta name="generator" content="ShipAny">`
+or `X-Powered-By: ShipAny`. The sitewide description is the motion-graphics
+line in `SITE_DESCRIPTION`. A stored `app_description` that is still the
+template studio sentence is ignored. `/prompts`, `/showcases`, `/posts`, and
+`/blog` template articles are noindex and are not added to the sitemap.
+There is no public `support@stp.ai` address. Seedance 1.0 Lite no longer
+offers 480P in the generator UI; 5s/720P/1080P/10s multipliers are unchanged.
+
+### Action required
+
+- None, unless a deployment set `VITE_APP_DESCRIPTION` or Settings →
+  `app_description` to a real sentence that still contains Joyflix, ShipAny,
+  Pixany, or `stp.ai`. That value is replaced by `SITE_DESCRIPTION`.
+
+---
+
 ## 2026-11-08: Aniform video units and monthly quotas
 
 New checkouts of `starter_monthly` and `pro_monthly` grant 40 and 100

@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Sparkles } from 'lucide-react';
 
-import type { CreationItem } from '@/modules/creations/store';
 // import { cn } from '@/lib/utils';
+import { SHOWCASES_DESCRIPTION, SHOWCASES_TITLE } from '@/config/seo-site';
+import type { CreationItem } from '@/modules/creations/store';
+import { selfCanonicalHead } from '@/lib/seo-document';
 import { m } from '@/paraglide/messages.js';
 import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
@@ -106,6 +108,8 @@ function ShowcasesPage() {
 }
 
 export const Route = createFileRoute('/showcases')({
+  head: () =>
+    selfCanonicalHead('/showcases', SHOWCASES_TITLE, SHOWCASES_DESCRIPTION),
   validateSearch: (search: Record<string, unknown>) => {
     return {
       page: search.page ? Number(search.page) : undefined,

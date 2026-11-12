@@ -5,7 +5,7 @@ import {
   SEO_PATH_REDIRECT_STATUS,
   seoPathRedirect,
 } from './config/seo-landings';
-import { requestApexRedirect } from './config/seo-site';
+import { PRODUCT_NAME, requestApexRedirect } from './config/seo-site';
 import { runWithDbScope } from './core/db/request-scope';
 import {
   getCookieFromHeader,
@@ -50,7 +50,7 @@ function ensureDefaultUserAgent() {
   if (fetchPatched) return;
   fetchPatched = true;
   const nativeFetch = globalThis.fetch;
-  const userAgent = `${envConfigs.app_name || 'ShipAny'} (+${envConfigs.app_url})`;
+  const userAgent = `${envConfigs.app_name || PRODUCT_NAME} (+${envConfigs.app_url})`;
   globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(
       init?.headers ?? (input instanceof Request ? input.headers : undefined)
@@ -80,22 +80,21 @@ function appHost(): string {
   }
 }
 
-// Identifies the stack, like WordPress's generator tag (see also the
-// generator <meta> in __root.tsx). Not a link; adds no SEO value.
-// Response.redirect() and fetched responses have immutable headers: copy
-// those, which also lets the cookie writes below succeed.
-function withPoweredBy(response: Response): Response {
+// Missing routes must not be index, follow. The HTML robots meta is set in
+// the root head; this header covers the same responses if the document meta
+// is skipped. Immutable redirect responses are copied before the write.
+function withNotFoundRobots(response: Response): Response {
+  if (response.status !== 404) return response;
+  const apply = (target: Response) => {
+    if (!target.headers.has('X-Robots-Tag')) {
+      target.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    }
+    return target;
+  };
   try {
-    if (!response.headers.has('X-Powered-By')) {
-      response.headers.set('X-Powered-By', 'ShipAny');
-    }
-    return response;
+    return apply(response);
   } catch {
-    const copy = new Response(response.body, response);
-    if (!copy.headers.has('X-Powered-By')) {
-      copy.headers.set('X-Powered-By', 'ShipAny');
-    }
-    return copy;
+    return apply(new Response(response.body, response));
   }
 }
 
@@ -116,8 +115,8 @@ export default {
 /**
  * www.aniform.online → https://aniform.online, same path and query.
  *
- * Both hostnames are custom domains on this Worker (live responses carry
- * `X-Powered-By: ShipAny`). The redirect runs in the Worker before routing,
+ * Both hostnames are custom domains on this Worker. The redirect runs in the
+ * Worker before routing,
  * so it does not depend on a Cloudflare dashboard Redirect Rule. GET and HEAD
  * use 301. Other methods use 308 so the method and body are kept.
  *
@@ -157,17 +156,17 @@ function seoCanonicalRedirect(req: Request): Response | null {
 async function handleRequest(req: Request): Promise<Response> {
   const apex = apexHostRedirect(req);
   if (apex) {
-    const response = withPoweredBy(apex);
+    const response = withNotFoundRobots(apex);
     applySecurityHeaders(response);
     return response;
   }
   const canonical = seoCanonicalRedirect(req);
   if (canonical) {
-    const response = withPoweredBy(canonical);
+    const response = withNotFoundRobots(canonical);
     applySecurityHeaders(response);
     return response;
   }
-  const response = withPoweredBy(
+  const response = withNotFoundRobots(
     await paraglideMiddleware(req, () => handler.fetch(req))
   );
   // First-touch attribution: remember UTM params for 30 days so sign-up can

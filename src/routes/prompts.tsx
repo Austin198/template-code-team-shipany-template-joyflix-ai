@@ -7,6 +7,8 @@ import { Sparkles } from 'lucide-react';
 // import { z } from 'zod';
 
 // import { cn } from '@/lib/utils';
+import { PROMPTS_DESCRIPTION, PROMPTS_TITLE } from '@/config/seo-site';
+import { selfCanonicalHead } from '@/lib/seo-document';
 import { m } from '@/paraglide/messages.js';
 import { Footer } from '@/blocks/footer';
 import { Header } from '@/blocks/header';
@@ -52,5 +54,6 @@ function PromptsPage() {
 }
 
 export const Route = createFileRoute('/prompts')({
+  head: () => selfCanonicalHead('/prompts', PROMPTS_TITLE, PROMPTS_DESCRIPTION),
   component: PromptsPage,
 });
